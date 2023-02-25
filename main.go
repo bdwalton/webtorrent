@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
 	_ "embed"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 
+	"github.com/bdwalton/webtorrent/server"
 	"gopkg.in/ini.v1"
 )
 
@@ -51,5 +53,9 @@ func main() {
 		if _, err := cfg.WriteTo(os.Stdout); err != nil {
 			log.Fatalf("Error printing config: %v\n", err)
 		}
+	}
+
+	if err := server.ListenAndServe(context.Background(), cfg); err != nil {
+		log.Fatalf("Server error: %v\n", err)
 	}
 }
