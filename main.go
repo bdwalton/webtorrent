@@ -3,10 +3,15 @@ package main
 import (
 	"context"
 	_ "embed"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/anacrolix/torrent"
 	"github.com/bdwalton/webtorrent/server"
@@ -62,7 +67,33 @@ func main() {
 		log.Fatalf("Error establishing torrent client: %v\n", err)
 	}
 
-	if err := server.ListenAndServe(context.Background(), c, cfg); err != nil {
-		log.Fatalf("Server error: %v\n", err)
+	ctx := context.Background()
+
+	srv := &http.Server{
+		Addr: ":" + cfg.Section("server").Key("port").String(),
 	}
+
+	go func() {
+		if err := server.ListenAndServe(ctx, srv, c, cfg); !errors.Is(err, http.ErrServerClosed) {
+			log.Fatalf("TorrentServer: Server error: %v\n", err)
+		}
+	}()
+
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
+
+	select {
+	case <-sig:
+		log.Println("TorrentServer: Shutting down after signal.")
+		c.Close()
+	case <-c.Closed():
+		log.Println("TorrentServer: Shutting down after torrent client stopped.")
+
+	}
+
+	sctx, release := context.WithTimeout(ctx, 10*time.Second)
+	defer release()
+	srv.Shutdown(sctx)
+
+	log.Println("TorrentServer: Goodbye...")
 }
