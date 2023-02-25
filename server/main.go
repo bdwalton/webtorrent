@@ -6,14 +6,32 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/anacrolix/torrent"
 	"gopkg.in/ini.v1"
 )
 
-func rootHandler(w http.ResponseWriter, r *http.Request) {
+type torrentServer struct {
+	c   *torrent.Client
+	cfg *ini.File
+}
+
+func newTorrentServer(c *torrent.Client, cfg *ini.File) *torrentServer {
+	return &torrentServer{
+		c:   c,
+		cfg: cfg,
+	}
+}
+
+func (ts *torrentServer) rootHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "<h1>Hello, world!</h1>")
 }
 
-func ListenAndServe(ctx context.Context, cfg *ini.File) error {
-	http.HandleFunc("/", rootHandler)
-	return http.ListenAndServe(":"+cfg.Section("server").Key("port").String(), nil)
+func (ts *torrentServer) serve(ctx context.Context) error {
+	http.HandleFunc("/", ts.rootHandler)
+	return http.ListenAndServe(":"+ts.cfg.Section("server").Key("port").String(), nil)
+}
+
+func ListenAndServe(ctx context.Context, c *torrent.Client, cfg *ini.File) error {
+	ts := newTorrentServer(c, cfg)
+	return ts.serve(ctx)
 }

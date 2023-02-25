@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/anacrolix/torrent"
 	"github.com/bdwalton/webtorrent/server"
 	"gopkg.in/ini.v1"
 )
@@ -55,7 +56,13 @@ func main() {
 		}
 	}
 
-	if err := server.ListenAndServe(context.Background(), cfg); err != nil {
+	tcfg := torrent.NewDefaultClientConfig()
+	c, err := torrent.NewClient(tcfg)
+	if err != nil {
+		log.Fatalf("Error establishing torrent client: %v\n", err)
+	}
+
+	if err := server.ListenAndServe(context.Background(), c, cfg); err != nil {
 		log.Fatalf("Server error: %v\n", err)
 	}
 }
