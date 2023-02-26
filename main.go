@@ -34,6 +34,17 @@ func validateConfig(cfg *ini.File) error {
 		return fmt.Errorf("Invalid server.port setting: %w", err)
 	}
 
+	// torrent.datadir is a required setting so the torrent
+	// library knows where to store download.
+	dd := cfg.Section("torrent").Key("datadir").String()
+	if dd == "" {
+		return fmt.Errorf("Invalid torrent.datadir setting: %q", dd)
+	}
+
+	if err := os.MkdirAll(dd, 0755); err != nil && !errors.Is(err, os.ErrExist) {
+		return fmt.Errorf("Invalid torrent.datadir setting: %v", err)
+	}
+
 	return nil
 }
 
@@ -62,6 +73,7 @@ func main() {
 	}
 
 	tcfg := torrent.NewDefaultClientConfig()
+	tcfg.DataDir = cfg.Section("torrent").Key("datadir").String()
 	c, err := torrent.NewClient(tcfg)
 	if err != nil {
 		log.Fatalf("Error establishing torrent client: %v\n", err)
