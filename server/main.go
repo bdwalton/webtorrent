@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/anacrolix/torrent"
+	"github.com/anacrolix/torrent/types/infohash"
 	"gopkg.in/ini.v1"
 )
 
@@ -37,8 +38,15 @@ func generic500(w http.ResponseWriter) {
 	w.Write([]byte("Unable to complete reponse. See server logs for details."))
 }
 
+type rootData struct {
+	Torrents []*torrent.Torrent
+}
+
 func (ts *torrentServer) rootHandler(w http.ResponseWriter, r *http.Request) {
-	if err := ts.tmpls.ExecuteTemplate(w, "root.tmpl.html", nil); err != nil {
+	data := rootData{
+		Torrents: ts.c.Torrents(),
+	}
+	if err := ts.tmpls.ExecuteTemplate(w, "root.tmpl.html", data); err != nil {
 		log.Println("TorrentServer: Failed to execute template:", err)
 		generic500(w)
 	}
@@ -48,15 +56,90 @@ func (ts *torrentServer) addTorrentHandler(w http.ResponseWriter, r *http.Reques
 	switch r.Method {
 	case "POST":
 		r.ParseForm()
-		t, err := ts.c.AddMagnet(r.FormValue("torrenturi"))
-		if err != nil {
-			log.Println("TorrentServer: Couldn't add magnet URI:", err)
-			generic500(w)
+		muri := r.FormValue("torrenturi")
+		if strings.HasPrefix(muri, "magnet:") {
+			t, err := ts.c.AddMagnet(muri)
+			if err != nil {
+				log.Println("TorrentServer: Couldn't add magnet URI:", err)
+				generic500(w)
+			}
+			go func(t *torrent.Torrent) {
+				<-t.GotInfo()
+				t.DownloadAll()
+			}(t)
+		} else {
+			log.Println("TorrentServer: Invalid URI:", muri)
 		}
-		go func(t *torrent.Torrent) {
-			<-t.GotInfo()
-			t.DownloadAll()
-		}(t)
+
+		http.Redirect(w, r, r.URL.Host+"/", http.StatusTemporaryRedirect)
+	default:
+		log.Println("TorrentServer: Received non-POST request to", r.RequestURI)
+		generic500(w)
+	}
+}
+
+func (ts *torrentServer) pauseTorrentHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		r.ParseForm()
+		h := r.FormValue("torrenthash")
+		log.Printf("TorrentServer: Asked to pause torrent with hash: %q", h)
+		t, ok := ts.c.Torrent(infohash.FromHexString(h))
+		if !ok {
+			log.Printf("TorrentServer: Invalid torrent hash %q", h)
+			generic500(w)
+			return
+		}
+
+		t.DisallowDataUpload()
+		t.DisallowDataDownload()
+		w.Write([]byte("Paused " + h))
+		return
+	default:
+		log.Println("TorrentServer: Received non-POST request to", r.RequestURI)
+		generic500(w)
+	}
+}
+
+func (ts *torrentServer) resumeTorrentHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		r.ParseForm()
+		h := r.FormValue("torrenthash")
+		log.Printf("TorrentServer: Asked to resume torrent with hash %q", h)
+		t, ok := ts.c.Torrent(infohash.FromHexString(h))
+		if !ok {
+			log.Printf("TorrentServer: Invalid torrent hash %q", h)
+			generic500(w)
+			return
+		}
+
+		t.AllowDataUpload()
+		t.AllowDataDownload()
+		w.Write([]byte("Resumed " + h))
+		return
+	default:
+		log.Println("TorrentServer: Received non-POST request to", r.RequestURI)
+		generic500(w)
+	}
+}
+
+func (ts *torrentServer) stopTorrentHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		r.ParseForm()
+		h := r.FormValue("torrenthash")
+		log.Printf("TorrentServer: Asked to stop torrent with hash %q", h)
+		t, ok := ts.c.Torrent(infohash.FromHexString(h))
+		if !ok {
+			log.Printf("TorrentServer: Invalid torrent hash %q", h)
+			generic500(w)
+			return
+		}
+
+		t.Drop()
+		w.Write([]byte("Stopped " + h))
+		return
 	default:
 		log.Println("TorrentServer: Received non-POST request to", r.RequestURI)
 		generic500(w)
@@ -83,6 +166,9 @@ func (ts *torrentServer) clientStatusHandler(w http.ResponseWriter, r *http.Requ
 func (ts *torrentServer) serve(ctx context.Context, s *http.Server) error {
 	http.HandleFunc("/", ts.rootHandler)
 	http.HandleFunc("/addtorrent", ts.addTorrentHandler)
+	http.HandleFunc("/pausetorrent", ts.pauseTorrentHandler)
+	http.HandleFunc("/resumetorrent", ts.resumeTorrentHandler)
+	http.HandleFunc("/stoptorrent", ts.stopTorrentHandler)
 	http.HandleFunc("/clientstatus", ts.clientStatusHandler)
 	http.HandleFunc("/quitquitquit", ts.quitHandler)
 
