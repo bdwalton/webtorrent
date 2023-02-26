@@ -48,7 +48,15 @@ func (ts *torrentServer) addTorrentHandler(w http.ResponseWriter, r *http.Reques
 	switch r.Method {
 	case "POST":
 		r.ParseForm()
-		fmt.Fprintf(w, "Recieved request to download URI %q", r.FormValue("torrenturi"))
+		t, err := ts.c.AddMagnet(r.FormValue("torrenturi"))
+		if err != nil {
+			log.Println("TorrentServer: Couldn't add magnet URI:", err)
+			generic500(w)
+		}
+		go func(t *torrent.Torrent) {
+			<-t.GotInfo()
+			t.DownloadAll()
+		}(t)
 	default:
 		log.Println("TorrentServer: Received non-POST request to", r.RequestURI)
 		generic500(w)
