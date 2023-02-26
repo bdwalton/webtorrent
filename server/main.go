@@ -33,12 +33,26 @@ func newTorrentServer(c *torrent.Client, cfg *ini.File) *torrentServer {
 	}
 }
 
+func generic500(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusInternalServerError)
+	w.Write([]byte("Unable to complete reponse. See server logs for details."))
+}
+
 func (ts *torrentServer) rootHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println(ts.tmpls)
 	if err := ts.tmpls.ExecuteTemplate(w, "root.tmpl.html", nil); err != nil {
 		log.Println("TorrentServer: Failed to execute template:", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Unable to complete response. See server logs for details."))
+		generic500(w)
+	}
+}
+
+func (ts *torrentServer) addTorrentHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		r.ParseForm()
+		fmt.Fprintf(w, "Recieved request to download URI %q", r.FormValue("torrenturi"))
+	default:
+		log.Println("TorrentServer: Received non-POST request to", r.RequestURI)
+		generic500(w)
 	}
 }
 
@@ -59,6 +73,7 @@ func (ts *torrentServer) torrentStatus(w http.ResponseWriter, r *http.Request) {
 
 func (ts *torrentServer) serve(ctx context.Context, s *http.Server) error {
 	http.HandleFunc("/", ts.rootHandler)
+	http.HandleFunc("/addtorrent", ts.addTorrentHandler)
 	http.HandleFunc("/clientstatus", ts.torrentStatus)
 	http.HandleFunc("/quitquitquit", ts.quitHandler)
 
