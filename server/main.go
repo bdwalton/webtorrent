@@ -3,8 +3,10 @@ package server
 
 import (
 	"context"
+	"embed"
 	"fmt"
 	"html"
+	"html/template"
 	"log"
 	"net/http"
 	"strings"
@@ -13,20 +15,31 @@ import (
 	"gopkg.in/ini.v1"
 )
 
+//go:embed templates/*.tmpl.html
+var templateFS embed.FS
+
 type torrentServer struct {
-	c   *torrent.Client
-	cfg *ini.File
+	c     *torrent.Client
+	cfg   *ini.File
+	tmpls *template.Template
 }
 
 func newTorrentServer(c *torrent.Client, cfg *ini.File) *torrentServer {
 	return &torrentServer{
 		c:   c,
 		cfg: cfg,
+		// This may panic, but only during startup, so should be fine.
+		tmpls: template.Must(template.ParseFS(templateFS, "templates/*.tmpl.html")),
 	}
 }
 
 func (ts *torrentServer) rootHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "<h1>Hello, world!</h1>")
+	log.Println(ts.tmpls)
+	if err := ts.tmpls.ExecuteTemplate(w, "root.tmpl.html", nil); err != nil {
+		log.Println("TorrentServer: Failed to execute template:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Unable to complete response. See server logs for details."))
+	}
 }
 
 func (ts *torrentServer) quitHandler(w http.ResponseWriter, r *http.Request) {
