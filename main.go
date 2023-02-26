@@ -88,12 +88,12 @@ func main() {
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 
 	select {
-	case <-sig:
-		log.Println("TorrentServer: Shutting down after signal.")
+	case s := <-sig:
+		log.Printf("TorrentServer: Received signal %q. Initiating shutdown.", s)
 		c.Close()
+		<-c.Closed()
 	case <-c.Closed():
 		log.Println("TorrentServer: Shutting down after torrent client stopped.")
-
 	}
 
 	sctx, release := context.WithTimeout(ctx, 10*time.Second)
