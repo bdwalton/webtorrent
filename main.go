@@ -19,8 +19,7 @@ import (
 )
 
 var (
-	configFile  = flag.String("config", "", "Path to the config file. Required.")
-	printConfig = flag.Bool("print_config", false, "Print the final config and exit.")
+	configFile = flag.String("config", "", "Path to the config file. Required.")
 )
 
 //go:embed default.ini
@@ -64,12 +63,6 @@ func main() {
 
 	if err := validateConfig(cfg); err != nil {
 		log.Fatalf("Invalid config: %v\n", err)
-	}
-
-	if *printConfig {
-		if _, err := cfg.WriteTo(os.Stdout); err != nil {
-			log.Fatalf("Error printing config: %v\n", err)
-		}
 	}
 
 	tcfg := torrent.NewDefaultClientConfig()

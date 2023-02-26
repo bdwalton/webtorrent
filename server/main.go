@@ -153,6 +153,15 @@ func (ts *torrentServer) quitHandler(w http.ResponseWriter, r *http.Request) {
 	ts.c.Close()
 }
 
+func (ts *torrentServer) showConfigHandler(w http.ResponseWriter, r *http.Request) {
+	s := strings.Builder{}
+	ts.cfg.WriteTo(&s)
+	if err := ts.tmpls.ExecuteTemplate(w, "showconfig.tmpl.html", s.String()); err != nil {
+		log.Println("TorrentServer: Failed to execute /torrentstatus template:", err)
+		generic500(w)
+	}
+}
+
 func (ts *torrentServer) clientStatusHandler(w http.ResponseWriter, r *http.Request) {
 	s := strings.Builder{}
 	ts.c.WriteStatus(&s)
@@ -168,6 +177,7 @@ func (ts *torrentServer) serve(ctx context.Context, s *http.Server) error {
 	http.HandleFunc("/addtorrent", ts.addTorrentHandler)
 	http.HandleFunc("/pausetorrent", ts.pauseTorrentHandler)
 	http.HandleFunc("/resumetorrent", ts.resumeTorrentHandler)
+	http.HandleFunc("/showconfig", ts.showConfigHandler)
 	http.HandleFunc("/stoptorrent", ts.stopTorrentHandler)
 	http.HandleFunc("/clientstatus", ts.clientStatusHandler)
 	http.HandleFunc("/quitquitquit", ts.quitHandler)
