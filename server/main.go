@@ -5,7 +5,6 @@ import (
 	"context"
 	"embed"
 	"fmt"
-	"html"
 	"html/template"
 	"log"
 	"net/http"
@@ -66,9 +65,11 @@ func (ts *torrentServer) quitHandler(w http.ResponseWriter, r *http.Request) {
 func (ts *torrentServer) torrentStatusHandler(w http.ResponseWriter, r *http.Request) {
 	s := strings.Builder{}
 	ts.c.WriteStatus(&s)
-	out := strings.Replace(html.EscapeString(s.String()), "\n", "<br>\n", -1)
-	fmt.Fprintln(w, "<h1>Torrent Client Status</h1>")
-	fmt.Fprintln(w, "<tt>", out, "</tt>")
+
+	if err := ts.tmpls.ExecuteTemplate(w, "torrentstatus.tmpl.html", s.String()); err != nil {
+		log.Println("TorrentServer: Failed to execute /torrentstatus template:", err)
+		generic500(w)
+	}
 }
 
 func (ts *torrentServer) serve(ctx context.Context, s *http.Server) error {
