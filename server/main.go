@@ -62,7 +62,7 @@ func (ts *torrentServer) quitHandler(w http.ResponseWriter, r *http.Request) {
 	ts.c.Close()
 }
 
-func (ts *torrentServer) torrentStatusHandler(w http.ResponseWriter, r *http.Request) {
+func (ts *torrentServer) clientStatusHandler(w http.ResponseWriter, r *http.Request) {
 	s := strings.Builder{}
 	ts.c.WriteStatus(&s)
 
@@ -75,7 +75,7 @@ func (ts *torrentServer) torrentStatusHandler(w http.ResponseWriter, r *http.Req
 func (ts *torrentServer) serve(ctx context.Context, s *http.Server) error {
 	http.HandleFunc("/", ts.rootHandler)
 	http.HandleFunc("/addtorrent", ts.addTorrentHandler)
-	http.HandleFunc("/clientstatus", ts.torrentStatusHandler)
+	http.HandleFunc("/clientstatus", ts.clientStatusHandler)
 	http.HandleFunc("/quitquitquit", ts.quitHandler)
 
 	log.Printf("TorrentServer: Listening on %q", s.Addr)
