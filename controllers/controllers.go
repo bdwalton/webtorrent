@@ -36,8 +36,8 @@ func Init(cfg *ini.File) error {
 	return nil
 }
 
-func torrentInfoFromTorrent(t *torrent.Torrent) *models.TorrentInfo {
-	return &models.TorrentInfo{
+func torrentInfoFromTorrent(t *torrent.Torrent) *models.Torrent {
+	return &models.Torrent{
 		Name: t.Name(),
 		Hash: t.InfoHash().HexString(),
 	}
@@ -48,7 +48,7 @@ func Index(c *gin.Context) {
 }
 
 func GetTorrents(c *gin.Context) {
-	torrents := []*models.TorrentInfo{}
+	torrents := []*models.Torrent{}
 	for _, t := range srv.client.Torrents() {
 		torrents = append(torrents, torrentInfoFromTorrent(t))
 	}
@@ -57,17 +57,17 @@ func GetTorrents(c *gin.Context) {
 }
 
 func AddTorrent(c *gin.Context) {
-	var taddr models.TorrentAddress
+	var ti models.Torrent
 
-	if err := c.BindJSON(&taddr); err != nil {
+	if err := c.BindJSON(&ti); err != nil {
 		c.JSON(http.StatusBadRequest, "")
 	}
 
-	if !strings.HasPrefix(taddr.URI, "magnet:") {
+	if !strings.HasPrefix(ti.URI, "magnet:") {
 		c.JSON(http.StatusBadRequest, "")
 	}
 
-	t, err := srv.client.AddMagnet(taddr.URI)
+	t, err := srv.client.AddMagnet(ti.URI)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, "")
 	}
