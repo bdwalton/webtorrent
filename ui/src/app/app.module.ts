@@ -4,13 +4,13 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
-import { TorrentsComponent } from './torrents/torrents.component';
+import { TorrentComponent } from './torrent/torrent.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    TorrentsComponent
+    TorrentComponent
   ],
   imports: [
     BrowserModule,
