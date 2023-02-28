@@ -13,8 +13,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/anacrolix/torrent"
-	"github.com/bdwalton/webtorrent/server"
+	"github.com/bdwalton/webtorrent/controllers"
+	"github.com/bdwalton/webtorrent/mappings"
 	"gopkg.in/ini.v1"
 )
 
@@ -65,21 +65,20 @@ func main() {
 		log.Fatalf("Invalid config: %v\n", err)
 	}
 
-	tcfg := torrent.NewDefaultClientConfig()
-	tcfg.DataDir = cfg.Section("torrent").Key("datadir").String()
-	c, err := torrent.NewClient(tcfg)
-	if err != nil {
-		log.Fatalf("Error establishing torrent client: %v\n", err)
+	// This should initialize the torrent client with appropriate config.
+	if err := controllers.Init(cfg); err != nil {
+		log.Fatalf("TorrenServer: %v")
 	}
 
-	ctx := context.Background()
+	mappings.Init()
 
 	srv := &http.Server{
-		Addr: ":" + cfg.Section("server").Key("port").String(),
+		Addr:    ":" + cfg.Section("server").Key("port").String(),
+		Handler: mappings.GetRouter(),
 	}
 
 	go func() {
-		if err := server.ListenAndServe(ctx, srv, c, cfg); !errors.Is(err, http.ErrServerClosed) {
+		if err := srv.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("TorrentServer: Server error: %v\n", err)
 		}
 	}()
@@ -90,13 +89,10 @@ func main() {
 	select {
 	case s := <-sig:
 		log.Printf("TorrentServer: Received signal %q. Initiating shutdown.", s)
-		c.Close()
-		<-c.Closed()
-	case <-c.Closed():
-		log.Println("TorrentServer: Shutting down after torrent client stopped.")
+		controllers.ShutdownTorrentClient()
 	}
 
-	sctx, release := context.WithTimeout(ctx, 10*time.Second)
+	sctx, release := context.WithTimeout(context.Background(), 10*time.Second)
 	defer release()
 	srv.Shutdown(sctx)
 
