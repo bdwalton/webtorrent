@@ -29,11 +29,8 @@ export class TorrentComponent implements OnInit {
   }
 
   addTorrent() {
-    var newTorrent : Torrent = {
-      URI: this.torrentURI,
-      Hash: '',
-      Name: '',
-    };
+    var newTorrent = new Torrent();
+    newTorrent.URI = this.torrentURI;
 
     this.torrentService.addTorrent(newTorrent).subscribe((torrent: Torrent) => {
       this.torrents.set(torrent.Hash, torrent);

@@ -25,7 +25,7 @@ export class TorrentService {
 
   pauseTorrent(torrent: Torrent) {
     return this.httpClient.put(environment.gateway + '/v1/torrent/pause', torrent);
-  }
+ }
 
   deleteTorrent(torrent: Torrent) {
     return this.httpClient.delete<Torrent>(environment.gateway + '/v1/torrent/' + torrent.Hash);
@@ -36,4 +36,6 @@ export class Torrent {
   URI: string = '';
   Hash: string = '';
   Name: string = '';
+  BytesDown: number = 0;
+  BytesTotal: number = 0;
 }

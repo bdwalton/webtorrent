@@ -38,8 +38,10 @@ func Init(cfg *ini.File) error {
 
 func torrentInfoFromTorrent(t *torrent.Torrent) *models.Torrent {
 	return &models.Torrent{
-		Name: t.Name(),
-		Hash: t.InfoHash().HexString(),
+		Name:       t.Name(),
+		Hash:       t.InfoHash().HexString(),
+		BytesDown:  t.BytesCompleted(),
+		BytesTotal: t.Length(),
 	}
 }
 
