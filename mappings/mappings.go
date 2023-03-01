@@ -2,6 +2,7 @@ package mappings
 
 import (
 	"github.com/bdwalton/webtorrent/controllers"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -9,6 +10,9 @@ var router *gin.Engine
 
 func Init() {
 	router = gin.Default()
+
+	// For now, allow all origins. We can tighten this up later.
+	router.Use(cors.Default())
 
 	router.LoadHTMLGlob("templates/*.tmpl.html")
 
