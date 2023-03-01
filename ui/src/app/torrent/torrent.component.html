@@ -3,12 +3,16 @@
   <thead>
   <tr>
     <th>Name</th>
+    <th>Progress</th>
     <th>Controls</th>
   </tr>
   </thead>
   <tbody>
   <tr *ngFor="let item of torrents | keyvalue">
-    <td>{{item.value.Name}} ({{item.value.BytesDown | fileSizeFormatter}} / {{item.value.BytesTotal | fileSizeFormatter}})</td>
+    <td>{{item.value.Name}}</td>
+    <td>
+      ({{item.value.BytesDown | fileSizeFormatter}} / {{item.value.BytesTotal | fileSizeFormatter}})
+    </td>
     <td>
       <button class="btn btn-primary" (click)="startTorrent(item.value)">
         <i class="fa fa-play"></i>
