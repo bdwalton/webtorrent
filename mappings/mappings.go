@@ -22,10 +22,10 @@ func Init() {
 
 	v1 := router.Group("/v1")
 	{
-		v1.GET("/torrents", controllers.GetTorrents)
-		v1.POST("/torrents", controllers.AddTorrent)
-		v1.DELETE("/torrents/:hash", controllers.DeleteTorrent)
-		// v1.PUT("/torrents/:hash", controllers.ToggleDownload)
+		v1.GET("/torrent", controllers.GetTorrents)
+		v1.POST("/torrent", controllers.AddTorrent)
+		v1.DELETE("/torrent/:hash", controllers.DeleteTorrent)
+		// v1.PUT("/torrent/:hash", controllers.ToggleDownload)
 	}
 }
 
