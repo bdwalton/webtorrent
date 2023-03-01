@@ -11,6 +11,7 @@
   <tr *ngFor="let item of torrents | keyvalue">
     <td>{{item.value.Name}}</td>
     <td>
+      {{ item.value.BytesDown / item.value.BytesTotal * 100 | number: '1.2-2'}}%
       ({{item.value.BytesDown | fileSizeFormatter}} / {{item.value.BytesTotal | fileSizeFormatter}})
     </td>
     <td>
