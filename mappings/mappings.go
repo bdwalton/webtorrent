@@ -1,6 +1,9 @@
 package mappings
 
 import (
+	"path"
+	"path/filepath"
+
 	"github.com/bdwalton/webtorrent/controllers"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -15,6 +18,18 @@ func Init() {
 	router.Use(cors.Default())
 
 	router.LoadHTMLGlob("templates/*.tmpl.html")
+
+	// Maybe provide an embed.FS for this later, but for now, we
+	// can serve them from the filesystem.
+	router.NoRoute(func(c *gin.Context) {
+		dir, file := path.Split(c.Request.RequestURI)
+		ext := filepath.Ext(file)
+		if file == "" || ext == "" {
+			c.File("./ui/dist/ui/index.html")
+		} else {
+			c.File("./ui/dist/ui/" + path.Join(dir, file))
+		}
+	})
 
 	router.GET("/showconfig", controllers.ShowConfig)
 	router.GET("/torrentstatus", controllers.TorrentStatus)
