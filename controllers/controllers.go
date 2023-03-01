@@ -71,7 +71,6 @@ func AddTorrent(c *gin.Context) {
 	}
 
 	<-t.GotInfo()
-	// t.DownloadAll()
 	c.JSON(http.StatusOK, torrentInfoFromTorrent(t))
 }
 
