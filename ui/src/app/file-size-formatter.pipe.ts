@@ -1,12 +1,16 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-const FILE_SIZE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+const FILE_SIZE_UNITS = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
 
 @Pipe({
   name: 'fileSizeFormatter'
 })
 export class FileSizeFormatterPipe implements PipeTransform {
   transform(sizeInBytes: number): string {
+
+    if (sizeInBytes == 0) {
+      return `0 B`
+    }
 
     let power = Math.round(Math.log(sizeInBytes) / Math.log(1024));
     power = Math.min(power, FILE_SIZE_UNITS.length - 1);
