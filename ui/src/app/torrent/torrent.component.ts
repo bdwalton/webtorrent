@@ -19,7 +19,7 @@ export class TorrentComponent implements OnInit {
   }
 
   getTorrents() {
-    this.torrentService.getTorrents().subscribe((data: any) => {
+    this.torrentService.getTorrents().subscribe((data: Torrent[]) => {
       this.torrents = data;
     });
   }

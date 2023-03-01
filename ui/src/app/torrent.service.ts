@@ -12,11 +12,11 @@ export class TorrentService {
   constructor(private httpClient: HttpClient) { }
 
   getTorrents() {
-    return this.httpClient.get(environment.gateway + '/v1/torrent')
+    return this.httpClient.get<Torrent[]>(environment.gateway + '/v1/torrent')
   }
 
   addTorrent(torrent: Torrent) {
-    return this.httpClient.post(environment.gateway + '/v1/torrent', torrent);
+    return this.httpClient.post<Torrent>(environment.gateway + '/v1/torrent', torrent);
   }
 
   startTorrent(torrent: Torrent) {

@@ -113,7 +113,6 @@ func PauseTorrent(c *gin.Context) {
 	t.DisallowDataDownload()
 
 	c.JSON(http.StatusOK, "")
-
 }
 
 func DeleteTorrent(c *gin.Context) {
