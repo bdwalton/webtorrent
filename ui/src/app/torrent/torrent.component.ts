@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 
 import { TorrentService, Torrent } from '../torrent.service';
 
+import { FileSizeFormatterPipe } from '../file-size-formatter.pipe';
+
 @Component({
   selector: 'app-torrent',
   templateUrl: './torrent.component.html',
