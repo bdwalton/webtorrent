@@ -79,7 +79,7 @@ func main() {
 
 	go func() {
 		if err := srv.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
-			log.Fatalf("TorrentServer: Server error: %v\n", err)
+			log.Fatalf("WebTorrent: Server error: %v\n", err)
 		}
 	}()
 
@@ -88,7 +88,7 @@ func main() {
 
 	select {
 	case s := <-sig:
-		log.Printf("TorrentServer: Received signal %q. Initiating shutdown.", s)
+		log.Printf("WebTorrent: Received signal %q. Initiating shutdown.", s)
 		controllers.ShutdownTorrentClient()
 	}
 
@@ -96,5 +96,5 @@ func main() {
 	defer release()
 	srv.Shutdown(sctx)
 
-	log.Println("TorrentServer: Goodbye...")
+	log.Println("WebTorrent: Goodbye...")
 }
