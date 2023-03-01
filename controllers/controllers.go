@@ -45,10 +45,6 @@ func torrentInfoFromTorrent(t *torrent.Torrent) *models.Torrent {
 	}
 }
 
-func Index(c *gin.Context) {
-	c.HTML(http.StatusOK, "index.tmpl.html", "")
-}
-
 func GetTorrents(c *gin.Context) {
 	torrents := []*models.Torrent{}
 	for _, t := range srv.client.Torrents() {

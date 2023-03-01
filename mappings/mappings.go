@@ -16,7 +16,6 @@ func Init() {
 
 	router.LoadHTMLGlob("templates/*.tmpl.html")
 
-	router.GET("/", controllers.Index)
 	router.GET("/showconfig", controllers.ShowConfig)
 	router.GET("/torrentstatus", controllers.TorrentStatus)
 
