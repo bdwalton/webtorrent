@@ -38,6 +38,18 @@ export class TorrentComponent implements OnInit {
     this.torrentURI = '';
   }
 
+  startTorrent(torrent: Torrent) {
+    this.torrentService.startTorrent(torrent).subscribe(() => {
+      this.getTorrents();
+    })
+  }
+
+  pauseTorrent(torrent: Torrent) {
+    this.torrentService.pauseTorrent(torrent).subscribe(() => {
+      this.getTorrents();
+    })
+  }
+
   deleteTorrent(torrent: Torrent) {
     this.torrentService.deleteTorrent(torrent).subscribe(() => {
       this.getTorrents();

@@ -9,6 +9,12 @@
   <tr *ngFor="let torrent of torrents">
     <td>{{torrent.Name}}</td>
     <td>
+      <button class="btn btn-primary" (click)="startTorrent(torrent)">
+        <i class="fa fa-play"></i>
+      </button>
+      <button class="btn btn-primary" (click)="pauseTorrent(torrent)">
+        <i class="fa fa-pause"></i>
+      </button>
       <button class="btn btn-danger" (click)="deleteTorrent(torrent)">
         <i class="fa fa-trash"></i>
       </button>

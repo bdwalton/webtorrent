@@ -77,6 +77,45 @@ func AddTorrent(c *gin.Context) {
 	c.JSON(http.StatusOK, torrentInfoFromTorrent(t))
 }
 
+func StartTorrent(c *gin.Context) {
+	var ti models.Torrent
+
+	if err := c.BindJSON(&ti); err != nil {
+		c.JSON(http.StatusBadRequest, "")
+	}
+
+	t, ok := srv.client.Torrent(infohash.FromHexString(ti.Hash))
+	if !ok {
+		c.JSON(http.StatusBadRequest, "")
+	}
+
+	t.AllowDataUpload()
+	t.AllowDataDownload()
+	t.DownloadAll()
+
+	c.JSON(http.StatusOK, "")
+
+}
+
+func PauseTorrent(c *gin.Context) {
+	var ti models.Torrent
+
+	if err := c.BindJSON(&ti); err != nil {
+		c.JSON(http.StatusBadRequest, "")
+	}
+
+	t, ok := srv.client.Torrent(infohash.FromHexString(ti.Hash))
+	if !ok {
+		c.JSON(http.StatusBadRequest, "")
+	}
+
+	t.DisallowDataUpload()
+	t.DisallowDataDownload()
+
+	c.JSON(http.StatusOK, "")
+
+}
+
 func DeleteTorrent(c *gin.Context) {
 	t, ok := srv.client.Torrent(infohash.FromHexString(c.Param("hash")))
 	if !ok {
@@ -86,10 +125,6 @@ func DeleteTorrent(c *gin.Context) {
 	t.Drop()
 	c.JSON(http.StatusOK, "")
 }
-
-// func ToggleTorrent(c *gin.Context) {
-// 	c.JSON(http.StatusOK, "")
-// }
 
 func TorrentStatus(c *gin.Context) {
 	s := strings.Builder{}

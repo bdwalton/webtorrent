@@ -24,8 +24,9 @@ func Init() {
 	{
 		v1.GET("/torrent", controllers.GetTorrents)
 		v1.POST("/torrent", controllers.AddTorrent)
+		v1.PUT("/torrent/start", controllers.StartTorrent)
+		v1.PUT("/torrent/pause", controllers.PauseTorrent)
 		v1.DELETE("/torrent/:hash", controllers.DeleteTorrent)
-		// v1.PUT("/torrent/:hash", controllers.ToggleDownload)
 	}
 }
 

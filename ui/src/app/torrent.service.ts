@@ -19,6 +19,14 @@ export class TorrentService {
     return this.httpClient.post(environment.gateway + '/v1/torrent', torrent);
   }
 
+  startTorrent(torrent: Torrent) {
+    return this.httpClient.put(environment.gateway + '/v1/torrent/start', torrent);
+  }
+
+  pauseTorrent(torrent: Torrent) {
+    return this.httpClient.put(environment.gateway + '/v1/torrent/pause', torrent);
+  }
+
   deleteTorrent(torrent: Torrent) {
     return this.httpClient.delete(environment.gateway + '/v1/torrent/' + torrent.Hash);
   }
