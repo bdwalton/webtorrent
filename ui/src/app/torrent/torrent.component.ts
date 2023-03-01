@@ -31,8 +31,8 @@ export class TorrentComponent implements OnInit {
       Name: '',
     };
 
-    this.torrentService.addTorrent(newTorrent).subscribe(() => {
-      this.getTorrents();
+    this.torrentService.addTorrent(newTorrent).subscribe((torrent: Torrent) => {
+      this.torrents.push(torrent)
     })
 
     this.torrentURI = '';
