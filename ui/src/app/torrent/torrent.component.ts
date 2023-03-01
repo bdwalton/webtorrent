@@ -10,6 +10,7 @@ import { TorrentService, Torrent } from '../torrent.service';
 export class TorrentComponent implements OnInit {
 
   torrents: Torrent[] = [];
+  torrentURI: string = '';
 
   constructor(private torrentService: TorrentService) { }
 
@@ -23,15 +24,19 @@ export class TorrentComponent implements OnInit {
     });
   }
 
-  // addTorrent() {
-  //   var newTorrentAddress : TorrentAddress = {
-  //     uri: 'magnet:?xt=urn:btih:KRWPCX3SJUM4IMM4YF5RPHL6ANPYTQPU',
-  //   };
+  addTorrent() {
+    var newTorrent : Torrent = {
+      URI: this.torrentURI,
+      Hash: '',
+      Name: '',
+    };
 
-  //   this.torrentService.addTorrent(newTorrentAddress).subscribe(() => {
-  //     this.getAll();
-  //   })
-  // }
+    this.torrentService.addTorrent(newTorrent).subscribe(() => {
+      this.getTorrents();
+    })
+
+    this.torrentURI = '';
+  }
 
   deleteTorrent(torrent: Torrent) {
     this.torrentService.deleteTorrent(torrent).subscribe(() => {

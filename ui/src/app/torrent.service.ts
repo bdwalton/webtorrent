@@ -20,12 +20,12 @@ export class TorrentService {
   }
 
   deleteTorrent(torrent: Torrent) {
-    return this.httpClient.delete(environment.gateway + '/v1/torrent/' + torrent.hash);
+    return this.httpClient.delete(environment.gateway + '/v1/torrent/' + torrent.Hash);
   }
 }
 
 export class Torrent {
-  uri: string = '';
-  hash: string = '';
-  name: string = '';
+  URI: string = '';
+  Hash: string = '';
+  Name: string = '';
 }
