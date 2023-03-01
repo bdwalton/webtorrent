@@ -6,11 +6,13 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TorrentComponent } from './torrent/torrent.component';
+import { FileSizeFormatterPipe } from './file-size-formatter.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
-    TorrentComponent
+    TorrentComponent,
+    FileSizeFormatterPipe
   ],
   imports: [
     BrowserModule,
