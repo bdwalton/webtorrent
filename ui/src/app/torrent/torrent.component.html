@@ -6,16 +6,16 @@
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let torrent of torrents">
-    <td>{{torrent.Name}}</td>
+  <tr *ngFor="let item of torrents | keyvalue">
+    <td>{{item.value.Name}}</td>
     <td>
-      <button class="btn btn-primary" (click)="startTorrent(torrent)">
+      <button class="btn btn-primary" (click)="startTorrent(item.value)">
         <i class="fa fa-play"></i>
       </button>
-      <button class="btn btn-primary" (click)="pauseTorrent(torrent)">
+      <button class="btn btn-primary" (click)="pauseTorrent(item.value)">
         <i class="fa fa-pause"></i>
       </button>
-      <button class="btn btn-danger" (click)="deleteTorrent(torrent)">
+      <button class="btn btn-danger" (click)="deleteTorrent(item.value)">
         <i class="fa fa-trash"></i>
       </button>
     </td>

@@ -9,7 +9,7 @@ import { TorrentService, Torrent } from '../torrent.service';
 })
 export class TorrentComponent implements OnInit {
 
-  torrents: Torrent[] = [];
+  torrents = new Map<String, Torrent>();
   torrentURI: string = '';
 
   constructor(private torrentService: TorrentService) { }
@@ -20,7 +20,11 @@ export class TorrentComponent implements OnInit {
 
   getTorrents() {
     this.torrentService.getTorrents().subscribe((data: Torrent[]) => {
-      this.torrents = data;
+      var tl = new Map<String, Torrent>();
+      data.forEach( (t) => {
+        tl.set(t.Hash, t);
+      })
+      this.torrents = tl;
     });
   }
 
@@ -32,7 +36,7 @@ export class TorrentComponent implements OnInit {
     };
 
     this.torrentService.addTorrent(newTorrent).subscribe((torrent: Torrent) => {
-      this.torrents.push(torrent)
+      this.torrents.set(torrent.Hash, torrent);
     })
 
     this.torrentURI = '';
@@ -51,8 +55,8 @@ export class TorrentComponent implements OnInit {
   }
 
   deleteTorrent(torrent: Torrent) {
-    this.torrentService.deleteTorrent(torrent).subscribe(() => {
-      this.getTorrents();
+    this.torrentService.deleteTorrent(torrent).subscribe((torrent: Torrent) => {
+      this.torrents.delete(torrent.Hash);
     })
   }
 }

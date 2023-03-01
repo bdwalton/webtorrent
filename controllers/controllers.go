@@ -122,7 +122,7 @@ func DeleteTorrent(c *gin.Context) {
 	}
 
 	t.Drop()
-	c.JSON(http.StatusOK, "")
+	c.JSON(http.StatusOK, torrentInfoFromTorrent(t))
 }
 
 func TorrentStatus(c *gin.Context) {
