@@ -7,6 +7,7 @@ import (
 	"github.com/bdwalton/webtorrent/controllers"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 var router *gin.Engine
@@ -33,6 +34,7 @@ func Init() {
 
 	router.GET("/showconfig", controllers.ShowConfig)
 	router.GET("/torrentstatus", controllers.TorrentStatus)
+	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	v1 := router.Group("/v1")
 	{
