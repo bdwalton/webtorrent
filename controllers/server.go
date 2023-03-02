@@ -62,6 +62,17 @@ func (s *server) writeMetaInfo(t *torrent.Torrent) {
 	}
 }
 
+func (s *server) dropTorrent(t *torrent.Torrent) {
+	t.Drop()
+	f := filepath.Join(s.datadir(), t.InfoHash().HexString()+suffix)
+	log.Printf("WebTorrent: Removing metainfo file %q.", f)
+	if err := os.Remove(f); err != nil {
+		// Not fatal, so log and carry on.
+		log.Printf("WebTorrent: Error removing metainfo file %q: %v", f, err)
+	}
+
+}
+
 // loadMetaInfoFiles will find and load all metadata files in
 // srv.datadir() that were previously persisted. It should only be
 // called at startup. No locking is done, although it should be safe

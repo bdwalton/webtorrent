@@ -95,7 +95,8 @@ func DeleteTorrent(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, "")
 	}
 
-	t.Drop()
+	srv.dropTorrent(t)
+
 	c.JSON(http.StatusOK, torrentInfoFromTorrent(t))
 }
 
