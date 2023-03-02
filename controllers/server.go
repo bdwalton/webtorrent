@@ -10,6 +10,7 @@ import (
 	"github.com/anacrolix/torrent"
 	"github.com/anacrolix/torrent/bencode"
 	"github.com/anacrolix/torrent/metainfo"
+	"github.com/prometheus/client_golang/prometheus"
 	"gopkg.in/ini.v1"
 )
 
@@ -17,15 +18,33 @@ const (
 	suffix = ".meta"
 )
 
+// srv is the package-level object we can reference to find the
+// Torrent client and global config.
+var srv *server
+
+// registerPrometheus is a dumb helper to centralize all prometheus
+// registrations for the conrollers package. This could possibly
+// trigger panics, so must only ever be called during server startup,
+// never later.
+func registerPrometheus() {
+	// This exports the number of currently loaded torrents. They
+	// may or may not be active.
+	loadedTorrents := prometheus.NewGaugeFunc(
+		prometheus.GaugeOpts{
+			Name: "webtorrent_torrents_loaded",
+			Help: "The number of currently loaded (not necessarily active) torrents.",
+		},
+		func() float64 { return float64(len(srv.client.Torrents())) },
+	)
+
+	prometheus.MustRegister(loadedTorrents)
+}
+
 type server struct {
 	client *torrent.Client
 	cfg    *ini.File
 	mtx    sync.Mutex
 }
-
-// srv is the package-level object we can reference to find the
-// Torrent client and global config.
-var srv *server
 
 // datadir returns the torrent.datadir key from the config as a
 // string. This is a small helper because we reference this
@@ -127,6 +146,8 @@ func Init(cfg *ini.File) error {
 	// We consider the torrent loading an optional so errors are
 	// swallowed (with logging), but not considered fatal.
 	srv.loadMetaInfoFiles()
+
+	registerPrometheus()
 
 	return nil
 }
