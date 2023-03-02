@@ -8,20 +8,20 @@
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let item of torrents | keyvalue">
-    <td>{{item.value.Name}}</td>
+  <tr *ngFor="let torrent of torrents">
+    <td>{{torrent.Name}}</td>
     <td>
-      {{ item.value.BytesDown / item.value.BytesTotal * 100 | number: '1.2-2'}}%
-      ({{item.value.BytesDown | fileSizeFormatter}} / {{item.value.BytesTotal | fileSizeFormatter}})
+      {{ torrent.BytesDown / torrent.BytesTotal * 100 | number: '1.2-2'}}%
+      ({{torrent.BytesDown | fileSizeFormatter}} / {{torrent.BytesTotal | fileSizeFormatter}})
     </td>
     <td>
-      <button class="btn btn-primary" (click)="startTorrent(item.value)">
+      <button class="btn btn-primary" (click)="startTorrent(torrent)">
         <i class="fa fa-play"></i>
       </button>
-      <button class="btn btn-primary" (click)="pauseTorrent(item.value)">
+      <button class="btn btn-primary" (click)="pauseTorrent(torrent)">
         <i class="fa fa-pause"></i>
       </button>
-      <button class="btn btn-danger" (click)="deleteTorrent(item.value)">
+      <button class="btn btn-danger" (click)="deleteTorrent(torrent)">
         <i class="fa fa-trash"></i>
       </button>
     </td>

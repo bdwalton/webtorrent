@@ -11,7 +11,7 @@ import { FileSizeFormatterPipe } from '../file-size-formatter.pipe';
 })
 export class TorrentComponent implements OnInit {
 
-  torrents = new Map<String, Torrent>();
+  torrents: Torrent[] = [];
   torrentURI: string = '';
 
   constructor(private torrentService: TorrentService) { }
@@ -22,11 +22,7 @@ export class TorrentComponent implements OnInit {
 
   getTorrents() {
     this.torrentService.getTorrents().subscribe((data: Torrent[]) => {
-      var tl = new Map<String, Torrent>();
-      data.forEach( (t) => {
-        tl.set(t.Hash, t);
-      })
-      this.torrents = tl;
+      this.torrents = data;
     });
   }
 
@@ -35,7 +31,7 @@ export class TorrentComponent implements OnInit {
     newTorrent.URI = this.torrentURI;
 
     this.torrentService.addTorrent(newTorrent).subscribe((torrent: Torrent) => {
-      this.torrents.set(torrent.Hash, torrent);
+      this.torrents.push(torrent);
     })
 
     this.torrentURI = '';
@@ -54,8 +50,13 @@ export class TorrentComponent implements OnInit {
   }
 
   deleteTorrent(torrent: Torrent) {
-    this.torrentService.deleteTorrent(torrent).subscribe((torrent: Torrent) => {
-      this.torrents.delete(torrent.Hash);
+    this.torrentService.deleteTorrent(torrent).subscribe((t: Torrent) => {
+      const idx = this.torrents.findIndex((elem) => {
+        return elem.Hash === t.Hash
+      });
+      if (idx !== -1) {
+        this.torrents.splice(idx, 1)
+      }
     })
   }
 }
