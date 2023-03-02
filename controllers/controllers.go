@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -9,32 +8,7 @@ import (
 	"github.com/anacrolix/torrent/types/infohash"
 	"github.com/bdwalton/webtorrent/models"
 	"github.com/gin-gonic/gin"
-	"gopkg.in/ini.v1"
 )
-
-type server struct {
-	client *torrent.Client
-	cfg    *ini.File
-}
-
-var srv *server
-
-func Init(cfg *ini.File) error {
-	tcfg := torrent.NewDefaultClientConfig()
-	tcfg.DataDir = cfg.Section("torrent").Key("datadir").String()
-
-	c, err := torrent.NewClient(tcfg)
-	if err != nil {
-		return fmt.Errorf("Error establishing torrent client: %v\n", err)
-	}
-
-	srv = &server{
-		client: c,
-		cfg:    cfg,
-	}
-
-	return nil
-}
 
 func torrentInfoFromTorrent(t *torrent.Torrent) *models.Torrent {
 	return &models.Torrent{
@@ -72,6 +46,9 @@ func AddTorrent(c *gin.Context) {
 
 	<-t.GotInfo()
 	c.JSON(http.StatusOK, torrentInfoFromTorrent(t))
+
+	// Errors from this are non-fatal, so nothing returned.
+	srv.writeMetaInfo(t)
 }
 
 func StartTorrent(c *gin.Context) {
