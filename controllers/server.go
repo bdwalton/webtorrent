@@ -13,6 +13,10 @@ import (
 	"gopkg.in/ini.v1"
 )
 
+const (
+	suffix = ".meta"
+)
+
 type server struct {
 	client *torrent.Client
 	cfg    *ini.File
@@ -38,7 +42,7 @@ func (s *server) writeMetaInfo(t *torrent.Torrent) {
 
 	mi := t.Metainfo()
 	h := t.InfoHash().HexString()
-	p := filepath.Join(s.datadir(), h+".meta")
+	p := filepath.Join(s.datadir(), h+suffix)
 
 	log.Printf("WebTorrent: Storing metadata for %q in %q.", h, p)
 
@@ -64,7 +68,7 @@ func (s *server) writeMetaInfo(t *torrent.Torrent) {
 // to call this in parallel regardless because the torrent client
 // locks internally.
 func (s *server) loadMetaInfoFiles() {
-	glob := filepath.Join(s.datadir(), "*.meta")
+	glob := filepath.Join(s.datadir(), "*"+suffix)
 	files, err := filepath.Glob(glob)
 	// For now, we log and carry on. We should export some metrics
 	// for this condition and maybe allow configuration options to
