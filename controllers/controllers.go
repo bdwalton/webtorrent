@@ -4,25 +4,15 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/anacrolix/torrent"
 	"github.com/anacrolix/torrent/types/infohash"
 	"github.com/bdwalton/webtorrent/models"
 	"github.com/gin-gonic/gin"
 )
 
-func torrentInfoFromTorrent(t *torrent.Torrent) *models.Torrent {
-	return &models.Torrent{
-		Name:       t.Name(),
-		Hash:       t.InfoHash().HexString(),
-		BytesDown:  t.BytesCompleted(),
-		BytesTotal: t.Length(),
-	}
-}
-
 func GetTorrents(c *gin.Context) {
 	torrents := []*models.Torrent{}
 	for _, t := range srv.client.Torrents() {
-		torrents = append(torrents, torrentInfoFromTorrent(t))
+		torrents = append(torrents, models.FromTorrent(t))
 	}
 
 	c.JSON(http.StatusOK, torrents)
@@ -45,7 +35,7 @@ func AddTorrent(c *gin.Context) {
 	}
 
 	<-t.GotInfo()
-	c.JSON(http.StatusOK, torrentInfoFromTorrent(t))
+	c.JSON(http.StatusOK, models.FromTorrent(t))
 
 	// Errors from this are non-fatal, so nothing returned.
 	srv.writeMetaInfo(t)
@@ -97,7 +87,7 @@ func DeleteTorrent(c *gin.Context) {
 
 	srv.dropTorrent(t)
 
-	c.JSON(http.StatusOK, torrentInfoFromTorrent(t))
+	c.JSON(http.StatusOK, models.FromTorrent(t))
 }
 
 func TorrentStatus(c *gin.Context) {
