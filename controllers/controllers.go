@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 	"strings"
 
@@ -29,6 +30,7 @@ func AddTorrent(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, "")
 	}
 
+	log.Printf("Webtorrent: Asked to torrent %q.", ti.URI)
 	t, err := srv.client.AddMagnet(ti.URI)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, "")
