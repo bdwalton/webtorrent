@@ -16,6 +16,7 @@ import { FileSizeFormatterPipe } from '../file-size-formatter.pipe';
 })
 export class TorrentComponent implements OnInit, AfterViewInit {
 
+  interval: number = 0;
   torrents = new MatTableDataSource<Torrent>([]);
 
   torrentURI: string = '';
@@ -30,6 +31,9 @@ export class TorrentComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.getTorrents();
+    this.interval = setInterval(()=>{
+      this.getTorrents();
+    }, 5000);
   }
 
   ngAfterViewInit() {
