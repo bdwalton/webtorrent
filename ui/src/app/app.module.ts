@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
+import { RouteReuseStrategy } from '@angular/router';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -9,6 +10,7 @@ import { TorrentComponent } from './torrent/torrent.component';
 import { TorrentStatusComponent } from './torrentstatus/torrentstatus.component';
 import { FileSizeFormatterPipe } from './file-size-formatter.pipe';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CacheRouteReuseStrategy } from './cache-route-reuse.strategy';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -43,7 +45,10 @@ import { ServerConfigComponent } from './serverconfig/serverconfig.component';
     MatTableModule,
     MatToolbarModule,
   ],
-  providers: [],
+  providers: [{
+    provide: RouteReuseStrategy,
+    useClass: CacheRouteReuseStrategy,
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
