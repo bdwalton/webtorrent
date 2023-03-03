@@ -17,6 +17,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { ServerConfigComponent } from './serverconfig/serverconfig.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     TorrentComponent,
     TorrentStatusComponent,
     FileSizeFormatterPipe,
+    ServerConfigComponent,
   ],
   imports: [
     BrowserModule,

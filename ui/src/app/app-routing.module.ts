@@ -2,6 +2,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { TorrentComponent } from './torrent/torrent.component';
 import { TorrentStatusComponent } from './torrentstatus/torrentstatus.component';
+import { ServerConfigComponent } from './serverconfig/serverconfig.component';
 
 const routes: Routes = [
   {
@@ -18,6 +19,11 @@ const routes: Routes = [
     path: 'torrentstatus',
     component: TorrentStatusComponent,
     title: "WebTorrent - Torrent Client Status"
+  },
+  {
+    path: 'showconfig',
+    component: ServerConfigComponent,
+    title: "WebTorrent - WebTorrent Server Config"
   },
 ];
 

@@ -34,6 +34,10 @@ export class TorrentService {
   getStatus() {
     return this.httpClient.get<TorrentTextData>(environment.gateway + '/v1/torrentstatus');
   }
+
+  getConfig() {
+    return this.httpClient.get<TorrentTextData>(environment.gateway + '/v1/showconfig');
+  }
 }
 
 export class Torrent {
