@@ -8,6 +8,8 @@ import { MatIcon } from '@angular/material/icon';
 
 import { MatSort, Sort } from '@angular/material/sort';
 
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+
 import { MatTableDataSource } from '@angular/material/table';
 
 import { filter } from 'rxjs/operators';

@@ -13,6 +13,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
@@ -36,6 +37,7 @@ import { ServerConfigComponent } from './serverconfig/serverconfig.component';
     MatButtonModule,
     MatIconModule,
     MatListModule,
+    MatProgressBarModule,
     MatSidenavModule,
     MatSortModule,
     MatTableModule,

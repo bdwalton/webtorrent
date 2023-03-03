@@ -16,6 +16,10 @@
     <td mat-cell *matCellDef="let torrent">
       {{ torrent.BytesDown / torrent.BytesTotal * 100 | number: '1.2-2'}}%
       ({{ torrent.BytesDown | fileSizeFormatter}} / {{ torrent.BytesTotal | fileSizeFormatter}})
+      <mat-progress-bar
+        mode="determinate"
+        value="{{ torrent.BytesDown / torrent.BytesTotal * 100 }}">
+      </mat-progress-bar>
     </td>
   </ng-container>
 
