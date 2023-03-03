@@ -1,0 +1,12 @@
+<h1 mat-dialog-title>Request New Torrent</h1>
+<div mat-dialog-content>
+  <p>What is the magnet link?</p>
+  <mat-form-field appearance="fill">
+    <mat-label>URI</mat-label>
+    <input matInput [(ngModel)]="data.uri">
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button mat-button [mat-dialog-close]="data.uri" cdkFocusInitial>Ok</button>
+</div>

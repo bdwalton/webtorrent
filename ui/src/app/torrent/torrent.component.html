@@ -47,7 +47,6 @@
   <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 </table>
 
-<input placeholder="magnet:..." [(ngModel)]="torrentURI">
-<button mat-mini-fab color="primary" aria-label="Add torrent" (click)="addTorrent()">
+<button mat-mini-fab color="primary" aria-label="Add torrent" (click)="openDialog()">
   <mat-icon>add_circle</mat-icon>
 </button>

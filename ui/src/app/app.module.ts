@@ -11,16 +11,20 @@ import { TorrentStatusComponent } from './torrentstatus/torrentstatus.component'
 import { FileSizeFormatterPipe } from './file-size-formatter.pipe';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CacheRouteReuseStrategy } from './cache-route-reuse.strategy';
+import { ServerConfigComponent } from './serverconfig/serverconfig.component';
+import { AddTorrentDialogComponent } from './add-torrent-dialog/add-torrent-dialog.component';
 
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { ServerConfigComponent } from './serverconfig/serverconfig.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +33,7 @@ import { ServerConfigComponent } from './serverconfig/serverconfig.component';
     TorrentStatusComponent,
     FileSizeFormatterPipe,
     ServerConfigComponent,
+    AddTorrentDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -37,7 +42,10 @@ import { ServerConfigComponent } from './serverconfig/serverconfig.component';
     HttpClientModule,
     BrowserAnimationsModule,
     MatButtonModule,
+    MatDialogModule,
+    MatFormFieldModule,
     MatIconModule,
+    MatInputModule,
     MatListModule,
     MatProgressBarModule,
     MatSidenavModule,

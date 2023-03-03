@@ -8,6 +8,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { filter } from 'rxjs/operators';
 import { TorrentService, Torrent } from '../torrent.service';
 import { FileSizeFormatterPipe } from '../file-size-formatter.pipe';
+import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { AddTorrentDialogComponent, DialogData } from '../add-torrent-dialog/add-torrent-dialog.component';
 
 @Component({
   selector: 'app-torrent',
@@ -19,11 +21,10 @@ export class TorrentComponent implements OnInit, AfterViewInit {
   interval: number = 0;
   torrents = new MatTableDataSource<Torrent>([]);
 
-  torrentURI: string = '';
-
   displayedColumns: string[] = ['Name', 'Progress', 'Controls'];
 
-  constructor(private torrentService: TorrentService,
+  constructor(public dialog: MatDialog,
+              private torrentService: TorrentService,
               private _liveAnnouncer: LiveAnnouncer) { }
 
   // Must be set in the component html or this will be undefined.
@@ -49,15 +50,25 @@ export class TorrentComponent implements OnInit, AfterViewInit {
     }
   }
 
+  openDialog(): void {
+    const dialogRef = this.dialog.open(AddTorrentDialogComponent, {
+      data: {uri: ''},
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.addTorrent(result);
+    });
+  }
+
   getTorrents() {
     this.torrentService.getTorrents().subscribe((data: Torrent[]) => {
       this.torrents.data = [...data];
     });
   }
 
-  addTorrent() {
+  addTorrent(uri: string) {
     var newTorrent = new Torrent();
-    newTorrent.URI = this.torrentURI;
+    newTorrent.URI = uri;
 
     this.torrentService.addTorrent(newTorrent).subscribe((data: Torrent) => {
       // We can add a torrent with an identical hash, but the backend
@@ -68,8 +79,6 @@ export class TorrentComponent implements OnInit, AfterViewInit {
           this.torrents.data = [...this.torrents.data, data];
       }
     })
-
-    this.torrentURI = '';
   }
 
   startTorrent(torrent: Torrent) {
