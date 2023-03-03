@@ -24,15 +24,17 @@
       Controls
     </th>
     <td mat-cell *matCellDef="let torrent">
-    <button class="btn btn-primary" (click)="startTorrent(torrent)">
-        <i class="fa fa-play"></i>
-      </button>
-      <button class="btn btn-primary" (click)="pauseTorrent(torrent)">
-        <i class="fa fa-pause"></i>
-      </button>
-      <button class="btn btn-danger" (click)="deleteTorrent(torrent)">
-        <i class="fa fa-trash"></i>
-      </button>
+      <div class="torrent-button-container">
+        <button mat-mini-fab color="primary" aria-label="Start torrent">
+          <mat-icon>play_arrow</mat-icon>
+        </button>
+        <button mat-mini-fab color="primary" aria-label="Pause torrent">
+          <mat-icon>pause</mat-icon>
+        </button>
+        <button mat-mini-fab color="primary" aria-label="Delete torrent" (click)="deleteTorrent(torrent)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
     </td>
   </ng-container>
 
@@ -42,4 +44,6 @@
 </table>
 
 <input placeholder="magnet:..." [(ngModel)]="torrentURI">
-<button class="btn btn-primary" (click)="addTorrent()">Add</button>
+<button mat-mini-fab color="primary" aria-label="Add torrent" (click)="addTorrent()">
+  <mat-icon>add_circle</mat-icon>
+</button>
