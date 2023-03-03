@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
+import { filter } from 'rxjs/operators';
+
 import { TorrentService, Torrent } from '../torrent.service';
 
 import { FileSizeFormatterPipe } from '../file-size-formatter.pipe';
@@ -14,6 +16,8 @@ export class TorrentComponent implements OnInit {
   torrents: Torrent[] = [];
   torrentURI: string = '';
 
+  displayedColumns: string[] = ['name', 'progress', 'controls'];
+
   constructor(private torrentService: TorrentService) { }
 
   ngOnInit() {
@@ -22,7 +26,7 @@ export class TorrentComponent implements OnInit {
 
   getTorrents() {
     this.torrentService.getTorrents().subscribe((data: Torrent[]) => {
-      this.torrents = data;
+      this.torrents = [...data];
     });
   }
 
@@ -30,8 +34,14 @@ export class TorrentComponent implements OnInit {
     var newTorrent = new Torrent();
     newTorrent.URI = this.torrentURI;
 
-    this.torrentService.addTorrent(newTorrent).subscribe((torrent: Torrent) => {
-      this.torrents.push(torrent);
+    this.torrentService.addTorrent(newTorrent).subscribe((data: Torrent) => {
+      // We can add a torrent with an identical hash, but the backend
+      // doesn't consider that an error and will return it
+      // happily. Thus, we ensure that we don't add dups to our list.
+      var idx = this.torrents.findIndex(item => item.Hash === data.Hash)
+      if (idx === -1) {
+          this.torrents = [...this.torrents, data];
+      }
     })
 
     this.torrentURI = '';
@@ -50,13 +60,8 @@ export class TorrentComponent implements OnInit {
   }
 
   deleteTorrent(torrent: Torrent) {
-    this.torrentService.deleteTorrent(torrent).subscribe((t: Torrent) => {
-      const idx = this.torrents.findIndex((elem) => {
-        return elem.Hash === t.Hash
-      });
-      if (idx !== -1) {
-        this.torrents.splice(idx, 1)
-      }
+    this.torrentService.deleteTorrent(torrent).subscribe((data: Torrent) => {
+      this.torrents = this.torrents.filter(item => item.Hash !== data.Hash);
     })
   }
 }

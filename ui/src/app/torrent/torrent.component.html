@@ -1,21 +1,22 @@
 <h2>Torrents</h2>
-<table class="table">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Progress</th>
-    <th>Controls</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr *ngFor="let torrent of torrents">
-    <td>{{torrent.Name}}</td>
-    <td>
+<table mat-table [dataSource]="torrents">
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef> Name </th>
+    <td mat-cell *matCellDef="let torrent"> {{ torrent.Name }} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="progress">
+    <th mat-header-cell *matHeaderCellDef> Progress </th>
+    <td mat-cell *matCellDef="let torrent">
       {{ torrent.BytesDown / torrent.BytesTotal * 100 | number: '1.2-2'}}%
-      ({{torrent.BytesDown | fileSizeFormatter}} / {{torrent.BytesTotal | fileSizeFormatter}})
+      ({{ torrent.BytesDown | fileSizeFormatter}} / {{ torrent.BytesTotal | fileSizeFormatter}})
     </td>
-    <td>
-      <button class="btn btn-primary" (click)="startTorrent(torrent)">
+  </ng-container>
+
+  <ng-container matColumnDef="controls">
+    <th mat-header-cell *matHeaderCellDef> Controls </th>
+    <td mat-cell *matCellDef="let torrent">
+    <button class="btn btn-primary" (click)="startTorrent(torrent)">
         <i class="fa fa-play"></i>
       </button>
       <button class="btn btn-primary" (click)="pauseTorrent(torrent)">
@@ -25,8 +26,11 @@
         <i class="fa fa-trash"></i>
       </button>
     </td>
-  </tr>
-  </tbody>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 </table>
 
 <input placeholder="magnet:..." [(ngModel)]="torrentURI">
