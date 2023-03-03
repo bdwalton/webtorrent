@@ -9,6 +9,7 @@ import { TorrentComponent } from './torrent/torrent.component';
 import { FileSizeFormatterPipe } from './file-size-formatter.pipe';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
+import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 
 @NgModule({
@@ -23,6 +24,7 @@ import { MatTableModule } from '@angular/material/table';
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
+    MatSortModule,
     MatTableModule,
   ],
   providers: [],

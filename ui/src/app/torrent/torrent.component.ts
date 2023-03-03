@@ -1,4 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { LiveAnnouncer } from '@angular/cdk/a11y';
+
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+
+import { MatSort, Sort } from '@angular/material/sort';
+
+import { MatTableDataSource } from '@angular/material/table';
 
 import { filter } from 'rxjs/operators';
 
@@ -11,22 +17,40 @@ import { FileSizeFormatterPipe } from '../file-size-formatter.pipe';
   templateUrl: './torrent.component.html',
   styleUrls: ['./torrent.component.scss']
 })
-export class TorrentComponent implements OnInit {
+export class TorrentComponent implements OnInit, AfterViewInit {
 
-  torrents: Torrent[] = [];
+  torrents = new MatTableDataSource<Torrent>([]);
+
   torrentURI: string = '';
 
-  displayedColumns: string[] = ['name', 'progress', 'controls'];
+  displayedColumns: string[] = ['Name', 'Progress', 'Controls'];
 
-  constructor(private torrentService: TorrentService) { }
+  constructor(private torrentService: TorrentService,
+              private _liveAnnouncer: LiveAnnouncer) { }
+
+  // Must be set in the component html or this will be undefined.
+  @ViewChild(MatSort) sort!: MatSort;
 
   ngOnInit() {
     this.getTorrents();
   }
 
+  ngAfterViewInit() {
+    this.torrents.sort = this.sort;
+  }
+
+  /** Announce the change in sort state for assistive technology. */
+  announceSortChange(sortState: Sort) {
+    if (sortState.direction) {
+      this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
+    } else {
+      this._liveAnnouncer.announce('Sorting cleared');
+    }
+  }
+
   getTorrents() {
     this.torrentService.getTorrents().subscribe((data: Torrent[]) => {
-      this.torrents = [...data];
+      this.torrents.data = [...data];
     });
   }
 
@@ -38,9 +62,9 @@ export class TorrentComponent implements OnInit {
       // We can add a torrent with an identical hash, but the backend
       // doesn't consider that an error and will return it
       // happily. Thus, we ensure that we don't add dups to our list.
-      var idx = this.torrents.findIndex(item => item.Hash === data.Hash)
+      var idx = this.torrents.data.findIndex(item => item.Hash === data.Hash)
       if (idx === -1) {
-          this.torrents = [...this.torrents, data];
+          this.torrents.data = [...this.torrents.data, data];
       }
     })
 
@@ -61,7 +85,7 @@ export class TorrentComponent implements OnInit {
 
   deleteTorrent(torrent: Torrent) {
     this.torrentService.deleteTorrent(torrent).subscribe((data: Torrent) => {
-      this.torrents = this.torrents.filter(item => item.Hash !== data.Hash);
+      this.torrents.data = this.torrents.data.filter(item => item.Hash !== data.Hash);
     })
   }
 }
