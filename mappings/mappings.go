@@ -18,8 +18,6 @@ func Init() {
 	// For now, allow all origins. We can tighten this up later.
 	router.Use(cors.Default())
 
-	router.LoadHTMLGlob("templates/*.tmpl.html")
-
 	// Maybe provide an embed.FS for this later, but for now, we
 	// can serve them from the filesystem.
 	router.NoRoute(func(c *gin.Context) {
@@ -32,7 +30,6 @@ func Init() {
 		}
 	})
 
-	router.GET("/showconfig", controllers.ShowConfig)
 	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	v1 := router.Group("/v1")
@@ -45,6 +42,7 @@ func Init() {
 		v1.DELETE("/torrent/:hash", controllers.DeleteTorrent)
 
 		// Server health diagnostic calls
+		v1.GET("/showconfig", controllers.ShowConfig)
 		v1.GET("/torrentstatus", controllers.TorrentStatus)
 	}
 }

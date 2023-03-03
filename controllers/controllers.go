@@ -101,7 +101,7 @@ func TorrentStatus(c *gin.Context) {
 func ShowConfig(c *gin.Context) {
 	s := strings.Builder{}
 	srv.cfg.WriteTo(&s)
-	c.HTML(http.StatusOK, "showconfig.tmpl.html", s.String())
+	c.JSON(http.StatusOK, models.TextDataFromString(s.String()))
 }
 
 func ShutdownTorrentClient() {
