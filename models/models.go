@@ -20,3 +20,11 @@ func FromTorrent(t *torrent.Torrent) *Torrent {
 		BytesTotal: t.Length(),
 	}
 }
+
+type TextData struct {
+	Data string `json:data`
+}
+
+func TextDataFromString(d string) *TextData {
+	return &TextData{Data: d}
+}

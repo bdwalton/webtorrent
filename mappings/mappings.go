@@ -33,16 +33,19 @@ func Init() {
 	})
 
 	router.GET("/showconfig", controllers.ShowConfig)
-	router.GET("/torrentstatus", controllers.TorrentStatus)
 	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	v1 := router.Group("/v1")
 	{
+		// Torrent interaction calls
 		v1.GET("/torrent", controllers.GetTorrents)
 		v1.POST("/torrent", controllers.AddTorrent)
 		v1.PUT("/torrent/start", controllers.StartTorrent)
 		v1.PUT("/torrent/pause", controllers.PauseTorrent)
 		v1.DELETE("/torrent/:hash", controllers.DeleteTorrent)
+
+		// Server health diagnostic calls
+		v1.GET("/torrentstatus", controllers.TorrentStatus)
 	}
 }
 

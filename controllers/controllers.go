@@ -95,7 +95,7 @@ func DeleteTorrent(c *gin.Context) {
 func TorrentStatus(c *gin.Context) {
 	s := strings.Builder{}
 	srv.client.WriteStatus(&s)
-	c.HTML(http.StatusOK, "torrentstatus.tmpl.html", s.String())
+	c.JSON(http.StatusOK, models.TextDataFromString(s.String()))
 }
 
 func ShowConfig(c *gin.Context) {
