@@ -30,6 +30,10 @@ export class TorrentService {
   deleteTorrent(torrent: Torrent) {
     return this.httpClient.delete<Torrent>(environment.gateway + '/v1/torrent/' + torrent.Hash);
   }
+
+  getStatus() {
+    return this.httpClient.get<TorrentTextData>(environment.gateway + '/v1/torrentstatus');
+  }
 }
 
 export class Torrent {
@@ -38,4 +42,8 @@ export class Torrent {
   Name: string = '';
   BytesDown: number = 0;
   BytesTotal: number = 0;
+}
+
+export class TorrentTextData {
+  Data: string = '';
 }

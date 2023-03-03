@@ -6,6 +6,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TorrentComponent } from './torrent/torrent.component';
+import { TorrentStatusComponent } from './torrentstatus/torrentstatus.component';
 import { FileSizeFormatterPipe } from './file-size-formatter.pipe';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -21,7 +22,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   declarations: [
     AppComponent,
     TorrentComponent,
-    FileSizeFormatterPipe
+    TorrentStatusComponent,
+    FileSizeFormatterPipe,
   ],
   imports: [
     BrowserModule,
