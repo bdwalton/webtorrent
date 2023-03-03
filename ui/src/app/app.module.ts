@@ -9,10 +9,13 @@ import { TorrentComponent } from './torrent/torrent.component';
 import { FileSizeFormatterPipe } from './file-size-formatter.pipe';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { MatSortModule } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 @NgModule({
   declarations: [
@@ -26,10 +29,13 @@ import { MatIconModule } from '@angular/material/icon';
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    MatSortModule,
-    MatTableModule,
     MatButtonModule,
     MatIconModule,
+    MatListModule,
+    MatSidenavModule,
+    MatSortModule,
+    MatTableModule,
+    MatToolbarModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

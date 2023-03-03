@@ -1,1 +1,24 @@
-<router-outlet></router-outlet>
+<div>
+  <mat-toolbar color="primary">
+    <button mat-icon-button attr.aria-label="{{ title }} Menu icon"
+            (click)="sidenav.toggle()" matTooltip="Toggle the menu.">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span>{{ title }}</span>
+  </mat-toolbar>
+</div>
+
+<div>
+  <mat-sidenav-container>
+    <mat-sidenav #sidenav mode="push">
+      <mat-nav-list role="navigation">
+        <mat-list-item>
+          <a mat-list-item routerLink="/torrent">Torrents</a>
+        </mat-list-item>
+      </mat-nav-list>
+    </mat-sidenav>
+    <mat-sidenav-content>
+      <router-outlet></router-outlet>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>
