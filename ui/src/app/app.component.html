@@ -10,16 +10,20 @@
 
 <div>
   <mat-sidenav-container>
-    <mat-sidenav #sidenav mode="push">
+    <mat-sidenav #sidenav mode="push" (click)="sidenav.close()">
       <mat-nav-list role="navigation">
         <mat-list-item>
           <a mat-list-item routerLink="/torrent">Torrents</a>
         </mat-list-item>
         <mat-list-item>
-          <a mat-list-item routerLink="/torrentstatus">Torrent Client Status</a>
+          <a mat-list-item routerLink="/torrentstatus">
+            Torrent Client Status
+          </a>
         </mat-list-item>
         <mat-list-item>
-          <a mat-list-item routerLink="/showconfig">WebTorrent Server Config</a>
+          <a mat-list-item routerLink="/showconfig">
+            WebTorrent Server Config
+          </a>
         </mat-list-item>
       </mat-nav-list>
     </mat-sidenav>
