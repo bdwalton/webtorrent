@@ -123,6 +123,40 @@ func (s *server) dropTorrent(t *torrent.Torrent) {
 
 }
 
+func (s *server) loadMetaInfoFile(path string) error {
+	var td models.WebTorrentMetadata
+
+	log.Printf("WebTorrent: Loading metainfo from %q.", path)
+
+	bin, err := os.ReadFile(path)
+	if err != nil {
+		return fmt.Errorf("WebTorrent: Failed to load metainfo file %q: %v", path, err)
+	}
+
+	if err := proto.Unmarshal(bin, &td); err != nil {
+		return fmt.Errorf("WebTorrent: Failed to unmarshall data from file %q: %v", path, err)
+	}
+
+	mi, err := metainfo.Load(bytes.NewBuffer(td.GetTorrentInfo()))
+	if err != nil {
+		return fmt.Errorf("WebTorrent: Error loading metainfo from proto: %v", err)
+	}
+
+	t, err := srv.client.AddTorrent(mi)
+	if err != nil {
+		return fmt.Errorf("WebTorrent: Error instantiating metainfo: %v", err)
+	}
+
+	s.torrents[td.GetHash()] = &models.BasicMetaData{
+		URI:     td.GetUri(),
+		Running: td.GetRunning(),
+		T:       t,
+	}
+
+	log.Printf("WebTorrent: Loaded %s from metainfo in %q.", t.String(), path)
+	return nil
+}
+
 // loadMetaInfoFiles will find and load all metadata files in
 // srv.datadir() that were previously persisted. It should only be
 // called at startup. No locking is done, although it should be safe
@@ -140,40 +174,9 @@ func (s *server) loadMetaInfoFiles() {
 	}
 
 	for _, f := range files {
-		var td models.WebTorrentMetadata
-
-		log.Printf("WebTorrent: Loading metainfo from %q.", f)
-
-		bin, err := os.ReadFile(f)
-		if err != nil {
-			log.Printf("WebTorrent: Failed to load metainfo file %q: %v", f, err)
-			continue
-		}
-
-		if err := proto.Unmarshal(bin, &td); err != nil {
-			log.Printf("WebTorrent: Failed to unmarshall data from file %q: %v", f, err)
-			continue
-		}
-
-		mi, err := metainfo.Load(bytes.NewBuffer(td.GetTorrentInfo()))
-		if err != nil {
-			log.Printf("WebTorrent: Error loading metainfo from proto: %v", err)
-			continue
-		}
-
-		t, err := srv.client.AddTorrent(mi)
-		if err != nil {
-			log.Printf("WebTorrent: Error instantiating metainfo: %v", err)
-			continue
-		}
-
-		s.torrents[td.GetHash()] = &models.BasicMetaData{
-			URI:     td.GetUri(),
-			Running: td.GetRunning(),
-			T:       t,
-		}
-
-		log.Printf("WebTorrent: Loaded %s from metainfo in %q.", t.String(), f)
+		// Errors are consistered non-fatal as this is a nice
+		// to have at startup.
+		s.loadMetaInfoFile(f)
 	}
 }
 
