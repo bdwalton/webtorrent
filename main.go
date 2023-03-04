@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	_ "embed"
 	"errors"
 	"flag"
 	"fmt"
@@ -21,9 +20,6 @@ import (
 var (
 	configFile = flag.String("config", "", "Path to the config file. Required.")
 )
-
-//go:embed default.ini
-var defaultConfig []byte
 
 // validateConfig expects a valid ini.File object and ensure that all
 // of the required settings are valid. A useful error will be returned
@@ -54,9 +50,7 @@ func main() {
 		log.Fatal("You must specify a config file via --config.")
 	}
 
-	// defaultConfig first because others take precedence when it
-	// comes to duplicates.
-	cfg, err := ini.Load(defaultConfig, *configFile)
+	cfg, err := ini.Load(*configFile)
 	if err != nil {
 		log.Fatalf("Failed to load config %q: %v\n", *configFile, err)
 	}
