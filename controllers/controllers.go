@@ -97,7 +97,10 @@ func DeleteTorrent(c *gin.Context) {
 		return
 	}
 
-	srv.dropTorrent(hash)
+	if err := srv.dropTorrent(hash); err != nil {
+		c.JSON(http.StatusInternalServerError, "")
+		return
+	}
 
 	c.JSON(http.StatusOK, models.FromTorrentData(md))
 }

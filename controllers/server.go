@@ -111,8 +111,8 @@ func (s *server) dropTorrent(hash string) error {
 
 	f := s.metadataPath(hash)
 	log.Printf("WebTorrent: Removing metainfo file %q.", f)
+
 	if err := os.Remove(f); err != nil {
-		// Not fatal, so log and carry on.
 		return fmt.Errorf("WebTorrent: Error removing metainfo file %q: %v", f, err)
 	}
 
