@@ -55,9 +55,9 @@ func AddTorrent(c *gin.Context) {
 }
 
 func StartTorrent(c *gin.Context) {
-	var ti models.Torrent
+	var td models.TextData
 
-	if err := c.BindJSON(&ti); err != nil {
+	if err := c.BindJSON(&td); err != nil {
 		m := &models.APIError{
 			Error:  "Failed to parse request",
 			Detail: "Call to StartTorrent() unable to parse input.",
@@ -65,7 +65,7 @@ func StartTorrent(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, m)
 	}
 
-	if err := srv.startTorrent(ti.Hash); err != nil {
+	if err := srv.startTorrent(td.Data); err != nil {
 		log.Printf("WebTorrent: Failed to start torrent: %v", err)
 		m := &models.APIError{
 			Error:  "Failed to start torrent.",
@@ -80,9 +80,9 @@ func StartTorrent(c *gin.Context) {
 }
 
 func PauseTorrent(c *gin.Context) {
-	var ti models.Torrent
+	var td models.TextData
 
-	if err := c.BindJSON(&ti); err != nil {
+	if err := c.BindJSON(&td); err != nil {
 		m := &models.APIError{
 			Error:  "Failed to parse request",
 			Detail: "Call to PauseTorrent() unable to parse input.",
@@ -90,7 +90,7 @@ func PauseTorrent(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, m)
 	}
 
-	if err := srv.pauseTorrent(ti.Hash); err != nil {
+	if err := srv.pauseTorrent(td.Data); err != nil {
 		log.Printf("WebTorrent: Failed to pause torrent: %v", err)
 		m := &models.APIError{
 			Error:  "Failed to pause torrent",
