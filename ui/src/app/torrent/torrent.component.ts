@@ -105,8 +105,8 @@ export class TorrentComponent implements OnInit, AfterViewInit {
     })
   }
 
-  deleteTorrent(torrent: Torrent) {
-    this.torrentService.deleteTorrent(torrent).subscribe((data: Torrent) => {
+  deleteTorrent(hash: string) {
+    this.torrentService.deleteTorrent(hash).subscribe((data: Torrent) => {
       this.torrents.data = this.torrents.data.filter(item => item.Hash !== data.Hash);
     })
   }

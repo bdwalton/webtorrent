@@ -44,7 +44,8 @@
                 aria-label="Pause torrent" (click)="pauseTorrent(torrent.Hash)">
           <mat-icon>pause</mat-icon>
         </button>
-        <button mat-mini-fab color="warn" aria-label="Delete torrent" (click)="deleteTorrent(torrent)">
+        <button mat-mini-fab color="warn" aria-label="Delete torrent"
+                (click)="deleteTorrent(torrent.Hash)">
           <mat-icon>delete</mat-icon>
         </button>
       </div>
