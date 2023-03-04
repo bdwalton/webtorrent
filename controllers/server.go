@@ -88,7 +88,7 @@ func (s *server) writeMetaInfo(hash string) {
 	s.mtx.Lock()
 	defer s.mtx.Unlock()
 
-	p := filepath.Join(s.datadir(), hash+suffix)
+	p := s.metadataPath(hash)
 	log.Printf("WebTorrent: Storing metadata for %q in %q.", hash, p)
 
 	// Assume umask gets applied here.
