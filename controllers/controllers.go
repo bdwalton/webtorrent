@@ -36,12 +36,21 @@ func AddTorrent(c *gin.Context) {
 	log.Printf("Webtorrent: Asked to torrent %q.", uri)
 	t, err := srv.client.AddMagnet(uri)
 	if err != nil {
+		log.Printf("WebTorrent: Error adding magnet uri %q: %v", uri, err)
 		c.JSON(http.StatusInternalServerError, "")
 		return
 	}
 
-	<-t.GotInfo()
+	// Return the to client before we do the rest of the setup as
+	// that can block for a long time.
 	c.JSON(http.StatusOK, models.FromTorrent(t))
+
+	// TODO(bdwalton): This can be problematic as it may return
+	// very late or sometimes "never." Put it in a goroutine and
+	// treat it as a failure after a timeout? That would still
+	// leak whatever resources the torrent client itself is
+	// consuming.
+	<-t.GotInfo()
 
 	// No fatal errors allowed beyond this point
 	srv.trackTorrent(uri, t)

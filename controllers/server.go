@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"os"
@@ -12,6 +13,7 @@ import (
 	"github.com/anacrolix/torrent/metainfo"
 	"github.com/bdwalton/webtorrent/models"
 	"github.com/prometheus/client_golang/prometheus"
+	"google.golang.org/protobuf/proto"
 	"gopkg.in/ini.v1"
 )
 
@@ -56,41 +58,57 @@ func (s *server) datadir() string {
 }
 
 func (s *server) trackTorrent(uri string, t *torrent.Torrent) {
-	s.torrents[t.InfoHash().HexString()] = &models.BasicMetaData{
+	md := &models.BasicMetaData{
 		URI:     uri,
 		Running: false,
 		T:       t,
 	}
 
+	h := t.InfoHash().HexString()
+	s.torrents[h] = md
+
+	log.Printf("WebTorrent: Tracking %s", t.String())
+
 	// Errors from this are non-fatal, so nothing returned.
-	s.writeMetaInfo(t)
+	s.writeMetaInfo(h)
 }
 
 // writeMetaInfo stores the torrent's metadata to disk so it can be
 // restored later.
-func (s *server) writeMetaInfo(t *torrent.Torrent) {
+func (s *server) writeMetaInfo(hash string) {
+	td := s.torrents[hash]
 	// Should be true before this is called, but doesn't hurt.
-	<-t.GotInfo()
+	<-td.T.GotInfo()
 
-	mi := t.Metainfo()
-	h := t.InfoHash().HexString()
-	p := filepath.Join(s.datadir(), h+suffix)
+	data := &models.WebTorrentMetadata{
+		Hash:    proto.String(hash),
+		Uri:     proto.String(td.URI),
+		Running: proto.Bool(td.Running),
+	}
 
-	log.Printf("WebTorrent: Storing metadata for %q in %q.", h, p)
+	var buf bytes.Buffer
+	if err := bencode.NewEncoder(&buf).Encode(td.T.Metainfo()); err != nil {
+		log.Printf("WebTorrent: File to write torrent metadata for %q: %v", hash, err)
+		return
+	}
+	data.TorrentInfo = buf.Bytes()
+
+	bin, err := proto.Marshal(data)
+	if err != nil {
+		log.Printf("WebTorrent: Error serializing proto prior to storing it: %v", err)
+		return
+	}
 
 	// Protect the create and write operations.
 	s.mtx.Lock()
 	defer s.mtx.Unlock()
 
-	f, err := os.Create(p)
-	if err != nil {
-		log.Printf("WebTorrent: Failed to create torrent metadata file for %q: %v", t.InfoHash().HexString(), err)
-		return
-	}
-	defer f.Close()
+	p := filepath.Join(s.datadir(), hash+suffix)
+	log.Printf("WebTorrent: Storing metadata for %q in %q.", hash, p)
 
-	if err := bencode.NewEncoder(f).Encode(mi); err != nil {
-		log.Printf("WebTorrent: File to write torrent metadata for %q: %v", t.InfoHash().HexString(), err)
+	// Assume umask gets applied here.
+	if err := os.WriteFile(p, bin, 0666); err != nil {
+		log.Printf("WebTorrent: Error persisting data for %q: %v", hash, err)
 	}
 }
 
@@ -122,21 +140,40 @@ func (s *server) loadMetaInfoFiles() {
 	}
 
 	for _, f := range files {
-		mi, err := metainfo.LoadFromFile(f)
-		// For now, we log and carry on. We should export some
-		// metrics for this condition and maybe allow
-		// configuration options to control the behaviour.
+		var td models.WebTorrentMetadata
+
+		log.Printf("WebTorrent: Loading metainfo from %q.", f)
+
+		bin, err := os.ReadFile(f)
 		if err != nil {
 			log.Printf("WebTorrent: Failed to load metainfo file %q: %v", f, err)
 			continue
 		}
 
-		t, err := srv.client.AddTorrent(mi)
-		if err != nil {
-			log.Printf("WebTorrent: Error loading metainfo: %v", err)
+		if err := proto.Unmarshal(bin, &td); err != nil {
+			log.Printf("WebTorrent: Failed to unmarshall data from file %q: %v", f, err)
+			continue
 		}
 
-		log.Printf("WebTorrent: Loaded %s from metainfo.", t.String())
+		mi, err := metainfo.Load(bytes.NewBuffer(td.GetTorrentInfo()))
+		if err != nil {
+			log.Printf("WebTorrent: Error loading metainfo from proto: %v", err)
+			continue
+		}
+
+		t, err := srv.client.AddTorrent(mi)
+		if err != nil {
+			log.Printf("WebTorrent: Error instantiating metainfo: %v", err)
+			continue
+		}
+
+		s.torrents[td.GetHash()] = &models.BasicMetaData{
+			URI:     td.GetUri(),
+			Running: td.GetRunning(),
+			T:       t,
+		}
+
+		log.Printf("WebTorrent: Loaded %s from metainfo in %q.", t.String(), f)
 	}
 }
 
