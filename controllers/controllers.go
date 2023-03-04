@@ -26,21 +26,25 @@ func AddTorrent(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, "")
 	}
 
-	if !strings.HasPrefix(td.Data, "magnet:") {
+	uri := td.Data
+
+	if !strings.HasPrefix(uri, "magnet:") {
 		c.JSON(http.StatusBadRequest, "")
+		return
 	}
 
-	log.Printf("Webtorrent: Asked to torrent %q.", td.Data)
-	t, err := srv.client.AddMagnet(td.Data)
+	log.Printf("Webtorrent: Asked to torrent %q.", uri)
+	t, err := srv.client.AddMagnet(uri)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, "")
+		return
 	}
 
 	<-t.GotInfo()
 	c.JSON(http.StatusOK, models.FromTorrent(t))
 
-	// Errors from this are non-fatal, so nothing returned.
-	srv.writeMetaInfo(t)
+	// No fatal errors allowed beyond this point
+	srv.trackTorrent(uri, t)
 }
 
 func StartTorrent(c *gin.Context) {

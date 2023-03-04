@@ -10,6 +10,7 @@ import (
 	"github.com/anacrolix/torrent"
 	"github.com/anacrolix/torrent/bencode"
 	"github.com/anacrolix/torrent/metainfo"
+	"github.com/bdwalton/webtorrent/models"
 	"github.com/prometheus/client_golang/prometheus"
 	"gopkg.in/ini.v1"
 )
@@ -41,9 +42,10 @@ func registerPrometheus() {
 }
 
 type server struct {
-	client *torrent.Client
-	cfg    *ini.File
-	mtx    sync.Mutex
+	client   *torrent.Client
+	cfg      *ini.File
+	mtx      sync.Mutex
+	torrents map[string]*models.BasicMetaData // Torrent Hash to our additional info
 }
 
 // datadir returns the torrent.datadir key from the config as a
@@ -51,6 +53,17 @@ type server struct {
 // frequently.
 func (s *server) datadir() string {
 	return s.cfg.Section("torrent").Key("datadir").String()
+}
+
+func (s *server) trackTorrent(uri string, t *torrent.Torrent) {
+	s.torrents[t.InfoHash().HexString()] = &models.BasicMetaData{
+		URI:     uri,
+		Running: false,
+		T:       t,
+	}
+
+	// Errors from this are non-fatal, so nothing returned.
+	s.writeMetaInfo(t)
 }
 
 // writeMetaInfo stores the torrent's metadata to disk so it can be
@@ -131,7 +144,10 @@ func (s *server) loadMetaInfoFiles() {
 // Torrent client. It also handles initializing pre-saved torrents
 // from storage.
 func Init(cfg *ini.File) error {
-	srv = &server{cfg: cfg}
+	srv = &server{
+		cfg:      cfg,
+		torrents: make(map[string]*models.BasicMetaData),
+	}
 
 	tcfg := torrent.NewDefaultClientConfig()
 	tcfg.DataDir = srv.datadir()
