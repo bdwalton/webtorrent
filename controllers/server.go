@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/anacrolix/torrent"
@@ -121,6 +122,23 @@ func (s *server) dropTorrent(hash string) error {
 	return nil
 }
 
+func (s *server) pauseTorrent(hash string) error {
+	md, ok := s.torrents[hash]
+	if !ok {
+		return fmt.Errorf("WebTorrent: Unknown torrent %q.", hash)
+	}
+
+	if err := s.dropTorrent(hash); err != nil {
+		return fmt.Errorf("WebTorrent: Failed to drop torrent during pauseTorrent(): %v", err)
+	}
+
+	if _, err := s.registerTorrent(md.URI); err != nil {
+		return fmt.Errorf("WebTorrent: Failed to register torrent during pauseTorrent(): %v", err)
+	}
+
+	return nil
+}
+
 func (s *server) loadMetaInfoFile(path string) error {
 	var td models.WebTorrentMetadata
 
@@ -178,11 +196,26 @@ func (s *server) loadMetaInfoFiles() {
 	}
 }
 
-func (s *server) registerTorrent(uri string, t *torrent.Torrent) *models.BasicMetaData {
+func (s *server) registerTorrent(uri string) (*models.BasicMetaData, error) {
+	if !strings.HasPrefix(uri, "magnet:") {
+		return nil, fmt.Errorf("WebTorrent: Invalid URI %q", uri)
+	}
+
+	log.Printf("Webtorrent: Asked to torrent %q.", uri)
+	t, err := s.client.AddMagnet(uri)
+	if err != nil {
+		return nil, fmt.Errorf("WebTorrent: Error adding magnet uri %q: %v", uri, err)
+	}
+
 	var md *models.BasicMetaData
 	hash := t.InfoHash().HexString()
+
+	// If this torrent is already known, don't do extra work and
+	// assume that we've already captured the required metadata in
+	// a persistent way.
 	if md, ok := s.torrents[hash]; ok {
-		return md
+		t.Drop() // Ensure the dup is removed.
+		return md, nil
 	}
 
 	md = &models.BasicMetaData{
@@ -193,7 +226,7 @@ func (s *server) registerTorrent(uri string, t *torrent.Torrent) *models.BasicMe
 	s.torrents[hash] = md
 	s.writeMetaInfo(hash)
 
-	return md
+	return md, nil
 }
 
 func (s *server) startTorrent(hash string) error {

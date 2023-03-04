@@ -29,24 +29,15 @@ func AddTorrent(c *gin.Context) {
 
 	uri := td.Data
 
-	if !strings.HasPrefix(uri, "magnet:") {
-		c.JSON(http.StatusBadRequest, "")
-		return
-	}
-
-	log.Printf("Webtorrent: Asked to torrent %q.", uri)
-	t, err := srv.client.AddMagnet(uri)
+	md, err := srv.registerTorrent(uri)
 	if err != nil {
-		log.Printf("WebTorrent: Error adding magnet uri %q: %v", uri, err)
+		log.Printf("WebTorrent: StartTorrent() call to registerTorrent() failed: %v", err)
 		m := &models.APIError{
-			Error:  "Failed adding URI",
-			Detail: "The torrent library was unable or unwilling to consume your URI. See error logs for details",
+			Error:  "Failed to register URI.",
+			Detail: "Unable to register the URI in the server. See error logs for details.",
 		}
 		c.JSON(http.StatusInternalServerError, m)
-		return
 	}
-
-	md := srv.registerTorrent(uri, t)
 
 	// Return the to client before we do the rest of the setup as
 	// that can block for a long time.
@@ -57,7 +48,7 @@ func AddTorrent(c *gin.Context) {
 	// treat it as a failure after a timeout? That would still
 	// leak whatever resources the torrent client itself is
 	// consuming.
-	<-t.GotInfo()
+	<-md.T.GotInfo()
 }
 
 func StartTorrent(c *gin.Context) {
