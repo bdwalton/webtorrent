@@ -49,3 +49,8 @@ type TextData struct {
 func TextDataFromString(d string) *TextData {
 	return &TextData{Data: d}
 }
+
+type APIError struct {
+	Error  string `json:error`
+	Detail string `json:detail`
+}
