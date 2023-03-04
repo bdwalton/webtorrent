@@ -20,18 +20,18 @@ func GetTorrents(c *gin.Context) {
 }
 
 func AddTorrent(c *gin.Context) {
-	var ti models.Torrent
+	var td models.TextData
 
-	if err := c.BindJSON(&ti); err != nil {
+	if err := c.BindJSON(&td); err != nil {
 		c.JSON(http.StatusBadRequest, "")
 	}
 
-	if !strings.HasPrefix(ti.URI, "magnet:") {
+	if !strings.HasPrefix(td.Data, "magnet:") {
 		c.JSON(http.StatusBadRequest, "")
 	}
 
-	log.Printf("Webtorrent: Asked to torrent %q.", ti.URI)
-	t, err := srv.client.AddMagnet(ti.URI)
+	log.Printf("Webtorrent: Asked to torrent %q.", td.Data)
+	t, err := srv.client.AddMagnet(td.Data)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, "")
 	}

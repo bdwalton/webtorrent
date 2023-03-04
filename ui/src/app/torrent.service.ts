@@ -15,8 +15,8 @@ export class TorrentService {
     return this.httpClient.get<Torrent[]>(environment.gateway + '/v1/torrent')
   }
 
-  addTorrent(torrent: Torrent) {
-    return this.httpClient.post<Torrent>(environment.gateway + '/v1/torrent', torrent);
+  addTorrent(data: TorrentTextData) {
+    return this.httpClient.post<Torrent>(environment.gateway + '/v1/torrent', data);
   }
 
   startTorrent(torrent: Torrent) {
@@ -49,5 +49,8 @@ export class Torrent {
 }
 
 export class TorrentTextData {
+  public constructor(uri: string) {
+    this.Data = uri;
+  }
   Data: string = '';
 }
