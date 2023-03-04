@@ -23,7 +23,11 @@ func AddTorrent(c *gin.Context) {
 	var td models.TextData
 
 	if err := c.BindJSON(&td); err != nil {
-		c.JSON(http.StatusBadRequest, "")
+		m := &models.APIError{
+			Error:  "Failed to parse request",
+			Detail: "Call to AddTorrent() unable to parse input.",
+		}
+		c.JSON(http.StatusBadRequest, m)
 	}
 
 	uri := td.Data
