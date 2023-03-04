@@ -63,14 +63,10 @@ func StartTorrent(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, "")
 	}
 
-	t, ok := srv.client.Torrent(infohash.FromHexString(ti.Hash))
-	if !ok {
+	if err := srv.startTorrent(ti.Hash); err != nil {
 		c.JSON(http.StatusBadRequest, "")
+		return
 	}
-
-	t.AllowDataUpload()
-	t.AllowDataDownload()
-	t.DownloadAll()
 
 	c.JSON(http.StatusOK, "")
 

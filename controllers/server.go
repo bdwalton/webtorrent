@@ -180,6 +180,28 @@ func (s *server) loadMetaInfoFiles() {
 	}
 }
 
+func (s *server) getTorrent(hash string) (*torrent.Torrent, error) {
+	if t, ok := s.torrents[hash]; ok {
+		return t.T, nil
+	}
+
+	return nil, fmt.Errorf("WebTorrent: No torrent registered with hash %q.", hash)
+}
+
+func (s *server) startTorrent(hash string) error {
+	t, err := s.getTorrent(hash)
+	if err != nil {
+		return err
+	}
+
+	t.AllowDataUpload()
+	t.AllowDataDownload()
+	t.DownloadAll()
+	s.torrents[hash].Running = true
+
+	return nil
+}
+
 // Init will create the global srv object and populate it with a
 // Torrent client. It also handles initializing pre-saved torrents
 // from storage.
