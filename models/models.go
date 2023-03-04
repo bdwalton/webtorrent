@@ -42,6 +42,39 @@ func FromTorrentData(md *BasicMetaData) *Torrent {
 	return t
 }
 
+// torrentFile is an internal container for storing additional info
+// about each file in a torrent.
+type torrentFile struct {
+	Path       string `json:path`
+	BytesDown  int64  `json:bytesdown`
+	BytesTotal int64  `json:bytestotal`
+}
+
+// TorrentDetails is what we'll serialize to json to service requests
+// for more specific info about a torrent.
+type TorrentDetails struct {
+	Torrent
+	Files []*torrentFile `json:files`
+}
+
+func TorrentDetailsFromData(md *BasicMetaData) *TorrentDetails {
+	td := &TorrentDetails{
+		Torrent: *FromTorrentData(md),
+		Files:   make([]*torrentFile, 0),
+	}
+
+	for _, f := range md.T.Files() {
+		fd := &torrentFile{
+			Path:       f.Path(),
+			BytesDown:  f.BytesCompleted(),
+			BytesTotal: f.Length(),
+		}
+		td.Files = append(td.Files, fd)
+	}
+
+	return td
+}
+
 type TextData struct {
 	Data string `json:data`
 }
