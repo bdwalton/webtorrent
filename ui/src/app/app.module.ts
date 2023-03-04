@@ -15,6 +15,7 @@ import { ServerConfigComponent } from './serverconfig/serverconfig.component';
 import { AddTorrentDialogComponent } from './add-torrent-dialog/add-torrent-dialog.component';
 
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -43,6 +44,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     HttpClientModule,
     BrowserAnimationsModule,
     MatButtonModule,
+    MatCardModule,
     MatDialogModule,
     MatFormFieldModule,
     MatIconModule,
