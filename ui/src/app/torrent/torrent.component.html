@@ -41,7 +41,7 @@
           <mat-icon>play_arrow</mat-icon>
         </button>
         <button *ngIf="torrent.Running && !torrent.Done" mat-mini-fab color="primary"
-                aria-label="Pause torrent">
+                aria-label="Pause torrent" (click)="pauseTorrent(torrent)">
           <mat-icon>pause</mat-icon>
         </button>
         <button mat-mini-fab color="warn" aria-label="Delete torrent" (click)="deleteTorrent(torrent)">
