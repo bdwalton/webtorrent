@@ -23,14 +23,17 @@ type Torrent struct {
 	URI        string `json:uri`
 	Name       string `json:name`
 	Hash       string `json:hash`
+	Running    bool   `json:running`
 	BytesDown  int64  `json:bytesdown`
 	BytesTotal int64  `json:bytestotal`
 }
 
 func FromTorrentData(md *BasicMetaData) *Torrent {
 	return &Torrent{
+		URI:        md.URI,
 		Name:       md.T.Name(),
 		Hash:       md.T.InfoHash().HexString(),
+		Running:    md.Running,
 		BytesDown:  md.T.BytesCompleted(),
 		BytesTotal: md.T.Length(),
 	}

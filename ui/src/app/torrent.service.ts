@@ -44,6 +44,7 @@ export class Torrent {
   URI: string = '';
   Hash: string = '';
   Name: string = '';
+  Running: boolean = false;
   BytesDown: number = 0;
   BytesTotal: number = 0;
 }
