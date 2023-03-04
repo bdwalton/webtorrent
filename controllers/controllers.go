@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/anacrolix/torrent/types/infohash"
 	"github.com/bdwalton/webtorrent/models"
 	"github.com/gin-gonic/gin"
 )
@@ -87,13 +86,14 @@ func PauseTorrent(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, m)
 	}
 
-	t, ok := srv.client.Torrent(infohash.FromHexString(ti.Hash))
-	if !ok {
-		c.JSON(http.StatusBadRequest, "")
+	if err := srv.pauseTorrent(ti.Hash); err != nil {
+		log.Printf("WebTorrent: Failed to pause torrent: %v", err)
+		m := &models.APIError{
+			Error:  "Failed to pause torrent",
+			Detail: "Call to PauseTorrent() unable to complete request. See error logs for details.",
+		}
+		c.JSON(http.StatusInternalServerError, m)
 	}
-
-	t.DisallowDataUpload()
-	t.DisallowDataDownload()
 
 	c.JSON(http.StatusOK, "")
 }
