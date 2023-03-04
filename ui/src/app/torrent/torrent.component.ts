@@ -55,6 +55,12 @@ export class TorrentComponent implements OnInit, AfterViewInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
+      // If we cancel the dialog, it's closed and this is still
+      // called. Ensure we have a useable result before we inspect it.
+      if (typeof result === 'undefined') {
+        return
+      }
+
       if (result.startsWith('magnet:')) {
         this.addTorrent(result);
       } else {
