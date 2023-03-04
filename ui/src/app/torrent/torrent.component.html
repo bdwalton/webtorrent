@@ -37,11 +37,11 @@
     <td mat-cell *matCellDef="let torrent">
       <div class="torrent-button-container">
         <button *ngIf="!torrent.Running && !torrent.Done" mat-mini-fab color="primary"
-                aria-label="Start torrent" (click)="startTorrent(torrent)">
+                aria-label="Start torrent" (click)="startTorrent(torrent.Hash)">
           <mat-icon>play_arrow</mat-icon>
         </button>
         <button *ngIf="torrent.Running && !torrent.Done" mat-mini-fab color="primary"
-                aria-label="Pause torrent" (click)="pauseTorrent(torrent)">
+                aria-label="Pause torrent" (click)="pauseTorrent(torrent.Hash)">
           <mat-icon>pause</mat-icon>
         </button>
         <button mat-mini-fab color="warn" aria-label="Delete torrent" (click)="deleteTorrent(torrent)">
