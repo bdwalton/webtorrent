@@ -12,8 +12,8 @@ import (
 
 func GetTorrents(c *gin.Context) {
 	torrents := []*models.Torrent{}
-	for _, t := range srv.client.Torrents() {
-		torrents = append(torrents, models.FromTorrent(t))
+	for _, md := range srv.torrents {
+		torrents = append(torrents, models.FromTorrentData(md))
 	}
 
 	c.JSON(http.StatusOK, torrents)
@@ -41,9 +41,11 @@ func AddTorrent(c *gin.Context) {
 		return
 	}
 
+	md := srv.registerTorrent(uri, t)
+
 	// Return the to client before we do the rest of the setup as
 	// that can block for a long time.
-	c.JSON(http.StatusOK, models.FromTorrent(t))
+	c.JSON(http.StatusOK, models.FromTorrentData(md))
 
 	// TODO(bdwalton): This can be problematic as it may return
 	// very late or sometimes "never." Put it in a goroutine and
@@ -51,9 +53,6 @@ func AddTorrent(c *gin.Context) {
 	// leak whatever resources the torrent client itself is
 	// consuming.
 	<-t.GotInfo()
-
-	// No fatal errors allowed beyond this point
-	srv.trackTorrent(uri, t)
 }
 
 func StartTorrent(c *gin.Context) {
@@ -91,14 +90,16 @@ func PauseTorrent(c *gin.Context) {
 }
 
 func DeleteTorrent(c *gin.Context) {
-	t, ok := srv.client.Torrent(infohash.FromHexString(c.Param("hash")))
+	hash := c.Param("hash")
+	md, ok := srv.torrents[hash]
 	if !ok {
 		c.JSON(http.StatusBadRequest, "")
+		return
 	}
 
-	srv.dropTorrent(t)
+	srv.dropTorrent(hash)
 
-	c.JSON(http.StatusOK, models.FromTorrent(t))
+	c.JSON(http.StatusOK, models.FromTorrentData(md))
 }
 
 func TorrentStatus(c *gin.Context) {

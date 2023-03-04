@@ -57,22 +57,6 @@ func (s *server) datadir() string {
 	return s.cfg.Section("torrent").Key("datadir").String()
 }
 
-func (s *server) trackTorrent(uri string, t *torrent.Torrent) {
-	md := &models.BasicMetaData{
-		URI:     uri,
-		Running: false,
-		T:       t,
-	}
-
-	h := t.InfoHash().HexString()
-	s.torrents[h] = md
-
-	log.Printf("WebTorrent: Tracking %s", t.String())
-
-	// Errors from this are non-fatal, so nothing returned.
-	s.writeMetaInfo(h)
-}
-
 // writeMetaInfo stores the torrent's metadata to disk so it can be
 // restored later.
 func (s *server) writeMetaInfo(hash string) {
@@ -112,15 +96,29 @@ func (s *server) writeMetaInfo(hash string) {
 	}
 }
 
-func (s *server) dropTorrent(t *torrent.Torrent) {
-	t.Drop()
-	f := filepath.Join(s.datadir(), t.InfoHash().HexString()+suffix)
+func (s *server) metadataPath(hash string) string {
+	return filepath.Join(s.datadir(), hash+suffix)
+}
+
+func (s *server) dropTorrent(hash string) error {
+	md, ok := s.torrents[hash]
+	if !ok {
+		return fmt.Errorf("WebTorrent: Unknown torrent %q. Can't drop.", hash)
+	}
+
+	md.T.Drop()
+	md.Running = false
+
+	f := s.metadataPath(hash)
 	log.Printf("WebTorrent: Removing metainfo file %q.", f)
 	if err := os.Remove(f); err != nil {
 		// Not fatal, so log and carry on.
-		log.Printf("WebTorrent: Error removing metainfo file %q: %v", f, err)
+		return fmt.Errorf("WebTorrent: Error removing metainfo file %q: %v", f, err)
 	}
 
+	delete(s.torrents, hash)
+
+	return nil
 }
 
 func (s *server) loadMetaInfoFile(path string) error {
@@ -180,24 +178,33 @@ func (s *server) loadMetaInfoFiles() {
 	}
 }
 
-func (s *server) getTorrent(hash string) (*torrent.Torrent, error) {
-	if t, ok := s.torrents[hash]; ok {
-		return t.T, nil
+func (s *server) registerTorrent(uri string, t *torrent.Torrent) *models.BasicMetaData {
+	var md *models.BasicMetaData
+	hash := t.InfoHash().HexString()
+	if md, ok := s.torrents[hash]; ok {
+		return md
 	}
 
-	return nil, fmt.Errorf("WebTorrent: No torrent registered with hash %q.", hash)
+	md = &models.BasicMetaData{
+		URI: uri,
+		T:   t,
+	}
+
+	s.torrents[hash] = md
+
+	return md
 }
 
 func (s *server) startTorrent(hash string) error {
-	t, err := s.getTorrent(hash)
-	if err != nil {
-		return err
+	md, ok := s.torrents[hash]
+	if !ok {
+		return fmt.Errorf("WebTorrent: Unknown hash %q, so can't start the download.", hash)
 	}
 
-	t.AllowDataUpload()
-	t.AllowDataDownload()
-	t.DownloadAll()
-	s.torrents[hash].Running = true
+	md.T.AllowDataUpload()
+	md.T.AllowDataDownload()
+	md.T.DownloadAll()
+	md.Running = true
 
 	return nil
 }
