@@ -127,6 +127,32 @@ func DeleteTorrent(c *gin.Context) {
 	c.JSON(http.StatusOK, models.FromTorrentData(md))
 }
 
+func TorrentDetails(c *gin.Context) {
+	hash := c.Param("hash")
+	_, ok := srv.torrents[hash]
+	if !ok {
+		m := &models.APIError{
+			Error:  "Unknown torrent",
+			Detail: fmt.Sprintf("Torrent %q isn't known by the server.", hash),
+		}
+		c.JSON(http.StatusBadRequest, m)
+		return
+	}
+
+	d, err := srv.torrentDetails(hash)
+	if err != nil {
+		log.Printf("WebTorrent: Error dropping torrent: %v", err)
+		m := &models.APIError{
+			Error:  "Failed to delete torrent",
+			Detail: "Cleaning up the torrent failed, see error logs for details.",
+		}
+		c.JSON(http.StatusInternalServerError, m)
+		return
+	}
+
+	c.JSON(http.StatusOK, d)
+}
+
 func TorrentStatus(c *gin.Context) {
 	s := strings.Builder{}
 	srv.client.WriteStatus(&s)

@@ -243,6 +243,15 @@ func (s *server) startTorrent(hash string) error {
 	return nil
 }
 
+func (s *server) torrentDetails(hash string) (*models.TorrentDetails, error) {
+	md, ok := s.torrents[hash]
+	if !ok {
+		return nil, fmt.Errorf("WebTorrent: Unknown torrent %q. Can't provide details.", hash)
+	}
+
+	return models.TorrentDetailsFromData(md), nil
+}
+
 // Init will create the global srv object and populate it with a
 // Torrent client. It also handles initializing pre-saved torrents
 // from storage.

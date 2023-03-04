@@ -41,6 +41,9 @@ func Init() {
 		v1.PUT("/torrent/pause", controllers.PauseTorrent)
 		v1.DELETE("/torrent/:hash", controllers.DeleteTorrent)
 
+		// Torrent details interaction calls
+		v1.GET("/torrentdetails/:hash", controllers.TorrentDetails)
+
 		// Server health diagnostic calls
 		v1.GET("/showconfig", controllers.ShowConfig)
 		v1.GET("/torrentstatus", controllers.TorrentStatus)
