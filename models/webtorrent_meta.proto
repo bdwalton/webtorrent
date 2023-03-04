@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package models;
 
+option go_package = "github.com/bdwalton/webtorrent/models";
+
 message WebTorrentMetadata {
   // The hex formatted hash of the torrent. This will be a primary key
   // in many places so is the primary field in this proto.
