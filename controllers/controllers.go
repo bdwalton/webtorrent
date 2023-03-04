@@ -98,6 +98,7 @@ func DeleteTorrent(c *gin.Context) {
 	}
 
 	if err := srv.dropTorrent(hash); err != nil {
+		log.Printf("WebTorrent: Error dropping torrent: %v", err)
 		c.JSON(http.StatusInternalServerError, "")
 		return
 	}

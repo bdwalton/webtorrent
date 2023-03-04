@@ -191,6 +191,7 @@ func (s *server) registerTorrent(uri string, t *torrent.Torrent) *models.BasicMe
 	}
 
 	s.torrents[hash] = md
+	s.writeMetaInfo(hash)
 
 	return md
 }
