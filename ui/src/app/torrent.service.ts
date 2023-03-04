@@ -15,16 +15,19 @@ export class TorrentService {
     return this.httpClient.get<Torrent[]>(environment.gateway + '/v1/torrent')
   }
 
-  addTorrent(data: TorrentTextData) {
-    return this.httpClient.post<Torrent>(environment.gateway + '/v1/torrent', data);
+  addTorrent(uri: string) {
+    var uriData = new TorrentTextData(uri);
+    return this.httpClient.post<Torrent>(environment.gateway + '/v1/torrent', uriData);
   }
 
-  startTorrent(hash: TorrentTextData) {
-    return this.httpClient.put(environment.gateway + '/v1/torrent/start', hash);
+  startTorrent(hash: string) {
+    var hashData = new TorrentTextData(hash);
+    return this.httpClient.put(environment.gateway + '/v1/torrent/start', hashData);
   }
 
-  pauseTorrent(hash: TorrentTextData) {
-    return this.httpClient.put(environment.gateway + '/v1/torrent/pause', hash);
+  pauseTorrent(hash: string) {
+    var hashData = new TorrentTextData(hash);
+    return this.httpClient.put(environment.gateway + '/v1/torrent/pause', hashData);
  }
 
   deleteTorrent(hash: string) {

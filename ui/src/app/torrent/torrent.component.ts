@@ -4,7 +4,7 @@ import { MatSort, Sort } from '@angular/material/sort';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { filter } from 'rxjs/operators';
-import { TorrentService, Torrent, TorrentTextData } from '../torrent.service';
+import { TorrentService, Torrent } from '../torrent.service';
 import { FileSizeFormatterPipe } from '../file-size-formatter.pipe';
 import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { AddTorrentDialogComponent, DialogData } from '../add-torrent-dialog/add-torrent-dialog.component';
@@ -78,9 +78,7 @@ export class TorrentComponent implements OnInit, AfterViewInit {
   }
 
   addTorrent(uri: string) {
-    var newURI = new TorrentTextData(uri);
-
-    this.torrentService.addTorrent(newURI).subscribe((data: Torrent) => {
+    this.torrentService.addTorrent(uri).subscribe((data: Torrent) => {
       // We can add a torrent with an identical hash, but the backend
       // doesn't consider that an error and will return it
       // happily. Thus, we ensure that we don't add dups to our list.
@@ -92,15 +90,13 @@ export class TorrentComponent implements OnInit, AfterViewInit {
   }
 
   startTorrent(hash: string) {
-    var startHash = new TorrentTextData(hash)
-    this.torrentService.startTorrent(startHash).subscribe(() => {
+    this.torrentService.startTorrent(hash).subscribe(() => {
       this.getTorrents();
     })
   }
 
   pauseTorrent(hash: string) {
-    var pauseHash = new TorrentTextData(hash)
-    this.torrentService.pauseTorrent(pauseHash).subscribe(() => {
+    this.torrentService.pauseTorrent(hash).subscribe(() => {
       this.getTorrents();
     })
   }
