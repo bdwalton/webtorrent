@@ -1,7 +1,5 @@
 <div>
-  <span>
-    {{ (prg.BytesDown / prg.BytesTotal) * 100 | number : "1.2-2" }}%
-  </span>
+  <span> {{ getPercent() | number : "1.2-2" }}% </span>
   <span>
     ({{ prg.BytesDown | fileSizeFormatter }} /
     {{ prg.BytesTotal | fileSizeFormatter }})

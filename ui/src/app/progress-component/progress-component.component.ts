@@ -8,4 +8,12 @@ import { Progress } from '../torrent.service';
 })
 export class ProgressComponentComponent {
   @Input() prg = new Progress(); // A torrent or file progress
+
+  getPercent(): number {
+    if (this.prg.BytesTotal === 0) {
+      return 0;
+    }
+
+    return (this.prg.BytesDown / this.prg.BytesTotal) * 100;
+  }
 }
