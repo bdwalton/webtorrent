@@ -14,20 +14,46 @@
     </mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
-    <table>
-      <tr>
-        <th>Filename</th>
-        <th>Progress</th>
-      </tr>
-      <tr *ngFor="let file of torrent.Files">
-        <td>{{ file.Path }}</td>
-        <td>
+    <table
+      mat-table
+      [dataSource]="torrentFiles"
+      matSort
+      (matSortChange)="announceSortChange($event)"
+      matSortActive="Path"
+      matSortDirection="asc"
+      matSortDisableClear
+    >
+      <ng-container matColumnDef="Path">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header="Path"
+          sortActionDescription="Sort by path"
+        >
+          Path
+        </th>
+        <td mat-cell *matCellDef="let file">
+          {{ file.Path }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Progress">
+        <th mat-header-cell *matHeaderCellDef>Progress</th>
+        <td mat-cell *matCellDef="let file">
           {{ (file.BytesDown / file.BytesTotal) * 100 | number : "1.2-2" }}% ({{
             file.BytesDown | fileSizeFormatter
           }}
           / {{ file.BytesTotal | fileSizeFormatter }})
+          <mat-progress-bar
+            mode="determinate"
+            value="{{ (file.BytesDown / file.BytesTotal) * 100 }}"
+          >
+          </mat-progress-bar>
         </td>
-      </tr>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
   </mat-card-content>
 </mat-card>
