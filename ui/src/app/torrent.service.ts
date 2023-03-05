@@ -61,6 +61,11 @@ export class TorrentService {
   }
 }
 
+export class Progress {
+  BytesDown: number = 0;
+  BytesTotal: number = 0;
+}
+
 export class Torrent {
   URI: string = '';
   Hash: string = '';
@@ -69,6 +74,7 @@ export class Torrent {
   Done: boolean = false;
   BytesDown: number = 0;
   BytesTotal: number = 0;
+  TotalProgress: Progress = new Progress();
 }
 
 export class TorrentTextData {
@@ -82,6 +88,7 @@ export class TorrentFile {
   Path: string = '';
   BytesDown: number = 0;
   BytesTotal: number = 0;
+  FileProgress: Progress = new Progress();
 }
 
 export class TorrentDetails extends Torrent {
