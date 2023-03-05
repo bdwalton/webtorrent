@@ -10,7 +10,7 @@
   <mat-card-header>
     <mat-card-title>{{ torrent.Name }}</mat-card-title>
     <mat-card-subtitle>
-      <a href="{{ torrent.URI }}">Magnet URI</a>
+      <a [href]="sanitize(torrent.URI)">Magnet URI</a>
     </mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
@@ -20,10 +20,12 @@
         <th>Progress</th>
       </tr>
       <tr *ngFor="let file of torrent.Files">
-        <td> {{ file.Path }}</td>
+        <td>{{ file.Path }}</td>
         <td>
-          {{ file.BytesDown / file.BytesTotal * 100 | number: '1.2-2'}}%
-          ({{ file.BytesDown | fileSizeFormatter}} / {{ file.BytesTotal | fileSizeFormatter}})
+          {{ (file.BytesDown / file.BytesTotal) * 100 | number : "1.2-2" }}% ({{
+            file.BytesDown | fileSizeFormatter
+          }}
+          / {{ file.BytesTotal | fileSizeFormatter }})
         </td>
       </tr>
     </table>
