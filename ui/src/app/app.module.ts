@@ -30,6 +30,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { TorrentDetailsComponent } from './torrent-details/torrent-details.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { ProgressComponentComponent } from './progress-component/progress-component.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
     AddTorrentDialogComponent,
     TorrentDetailsComponent,
     PageNotFoundComponent,
+    ProgressComponentComponent,
   ],
   imports: [
     BrowserModule,
