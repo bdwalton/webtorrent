@@ -8,10 +8,12 @@
 
 <mat-card>
   <mat-card-header>
-    <mat-card-title>{{ torrent.Name }}</mat-card-title>
-    <mat-card-subtitle>
-      <a [href]="sanitize(torrent.URI)">Magnet URI</a>
-    </mat-card-subtitle>
+    <mat-card-title>
+      {{ torrent.Name }}
+      <a [href]="sanitize(torrent.URI)">
+        <mat-icon>link</mat-icon>
+      </a>
+    </mat-card-title>
   </mat-card-header>
   <mat-card-content>
     <table
