@@ -42,18 +42,9 @@
       <ng-container matColumnDef="Progress">
         <th mat-header-cell *matHeaderCellDef>Progress</th>
         <td mat-cell *matCellDef="let file">
-          {{
-            (file.FileProgress.BytesDown / file.FileProgress.BytesTotal) * 100
-              | number : "1.2-2"
-          }}% ({{ file.BytesDown | fileSizeFormatter }} /
-          {{ file.FileProgress.BytesTotal | fileSizeFormatter }})
-          <mat-progress-bar
-            mode="determinate"
-            value="{{
-              (file.FileProgress.BytesDown / file.FileProgress.BytesTotal) * 100
-            }}"
-          >
-          </mat-progress-bar>
+          <app-progress-component
+            [prg]="file.FileProgress"
+          ></app-progress-component>
         </td>
       </ng-container>
 

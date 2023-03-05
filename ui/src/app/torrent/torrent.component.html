@@ -39,16 +39,9 @@
   <ng-container matColumnDef="Progress">
     <th mat-header-cell *matHeaderCellDef>Progress</th>
     <td mat-cell *matCellDef="let torrent">
-      {{
-        (torrent.TotalProgress.BytesDown / torrent.TotalProgress.BytesTotal) *
-          100 | number : "1.2-2"
-      }}% ({{ torrent.TotalProgress.BytesDown | fileSizeFormatter }} /
-      {{ torrent.TotalProgress.BytesTotal | fileSizeFormatter }})
-      <mat-progress-bar
-        mode="determinate"
-        value="{{ (torrent.BytesDown / torrent.BytesTotal) * 100 }}"
-      >
-      </mat-progress-bar>
+      <app-progress-component
+        [prg]="torrent.TotalProgress"
+      ></app-progress-component>
     </td>
   </ng-container>
 

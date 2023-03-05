@@ -1,1 +1,14 @@
-<p>progress-component works!</p>
+<div>
+  <span>
+    {{ (prg.BytesDown / prg.BytesTotal) * 100 | number : "1.2-2" }}%
+  </span>
+  <span>
+    ({{ prg.BytesDown | fileSizeFormatter }} /
+    {{ prg.BytesTotal | fileSizeFormatter }})
+  </span>
+  <mat-progress-bar
+    mode="determinate"
+    value="{{ (prg.BytesDown / prg.BytesTotal) * 100 }}"
+  >
+  </mat-progress-bar>
+</div>
