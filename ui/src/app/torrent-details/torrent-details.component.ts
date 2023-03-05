@@ -23,9 +23,9 @@ export class TorrentDetailsComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['Path', 'Progress'];
 
   constructor(
-    private route: ActivatedRoute,
-    private sanitizer: DomSanitizer,
-    private torrentService: TorrentService,
+    private _route: ActivatedRoute,
+    private _sanitizer: DomSanitizer,
+    private _torrentService: TorrentService,
     private _liveAnnouncer: LiveAnnouncer
   ) {}
 
@@ -33,7 +33,7 @@ export class TorrentDetailsComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
 
   ngOnInit() {
-    this.route.paramMap.subscribe((params: ParamMap) => {
+    this._route.paramMap.subscribe((params: ParamMap) => {
       this.hash = params.get('hash') as string;
     });
 
@@ -45,7 +45,7 @@ export class TorrentDetailsComponent implements OnInit, AfterViewInit {
   }
 
   sanitize(url: string) {
-    return this.sanitizer.bypassSecurityTrustUrl(url);
+    return this._sanitizer.bypassSecurityTrustUrl(url);
   }
 
   /** Announce the change in sort state for assistive technology. */
@@ -58,7 +58,7 @@ export class TorrentDetailsComponent implements OnInit, AfterViewInit {
   }
 
   getTorrentDetails(hash: string) {
-    this.torrentService
+    this._torrentService
       .getTorrentDetails(hash)
       .subscribe((data: TorrentDetails) => {
         this.torrent = data;

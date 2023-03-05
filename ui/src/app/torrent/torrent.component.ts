@@ -1,37 +1,51 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
-import { AfterViewInit, HostListener, Component, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  HostListener,
+  Component,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { filter } from 'rxjs/operators';
 import { TorrentService, Torrent } from '../torrent.service';
 import { FileSizeFormatterPipe } from '../file-size-formatter.pipe';
-import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { AddTorrentDialogComponent, DialogData } from '../add-torrent-dialog/add-torrent-dialog.component';
+import {
+  MatDialog,
+  MAT_DIALOG_DATA,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import {
+  AddTorrentDialogComponent,
+  DialogData,
+} from '../add-torrent-dialog/add-torrent-dialog.component';
 
 @Component({
   selector: 'app-torrent',
   templateUrl: './torrent.component.html',
-  styleUrls: ['./torrent.component.scss']
+  styleUrls: ['./torrent.component.scss'],
 })
 export class TorrentComponent implements OnInit, AfterViewInit {
-
   interval: number = 0;
   torrents = new MatTableDataSource<Torrent>([]);
 
   displayedColumns: string[] = ['Name', 'Progress', 'Controls'];
 
-  constructor(public dialog: MatDialog,
-              private torrentService: TorrentService,
-              private _snackBar: MatSnackBar,
-              private _liveAnnouncer: LiveAnnouncer) { }
+  constructor(
+    public dialog: MatDialog,
+    private _torrentService: TorrentService,
+    private _snackBar: MatSnackBar,
+    private _liveAnnouncer: LiveAnnouncer
+  ) {}
 
   // Must be set in the component html or this will be undefined.
   @ViewChild(MatSort) sort!: MatSort;
 
   ngOnInit() {
     this.getTorrents();
-    this.interval = setInterval(()=>{
+    this.interval = setInterval(() => {
       this.getTorrents();
     }, 5000);
   }
@@ -57,59 +71,65 @@ export class TorrentComponent implements OnInit, AfterViewInit {
 
   openDialog(): void {
     const dialogRef = this.dialog.open(AddTorrentDialogComponent, {
-      data: {uri: ''},
+      data: { uri: '' },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       // If we cancel the dialog, it's closed and this is still
       // called. Ensure we have a useable result before we inspect it.
       if (typeof result === 'undefined') {
-        return
+        return;
       }
 
       if (result.startsWith('magnet:')) {
         this.addTorrent(result);
       } else {
-        this._snackBar.open('Invalid Magnet URI. Must start with "magnet:"', 'OK', {
-          duration: 5000
-        });
+        this._snackBar.open(
+          'Invalid Magnet URI. Must start with "magnet:"',
+          'OK',
+          {
+            duration: 5000,
+          }
+        );
       }
     });
   }
 
   getTorrents() {
-    this.torrentService.getTorrents().subscribe((data: Torrent[]) => {
+    this._torrentService.getTorrents().subscribe((data: Torrent[]) => {
       this.torrents.data = [...data];
     });
   }
 
   addTorrent(uri: string) {
-    this.torrentService.addTorrent(uri).subscribe((data: Torrent) => {
+    this._torrentService.addTorrent(uri).subscribe((data: Torrent) => {
       // We can add a torrent with an identical hash, but the backend
       // doesn't consider that an error and will return it
       // happily. Thus, we ensure that we don't add dups to our list.
-      var idx = this.torrents.data.findIndex(item => item.Hash === data.Hash)
+      var idx = this.torrents.data.findIndex((item) => item.Hash === data.Hash);
       if (idx === -1) {
-          this.torrents.data = [...this.torrents.data, data];
+        this.torrents.data = [...this.torrents.data, data];
       }
-    })
+    });
   }
 
   startTorrent(hash: string) {
-    this.torrentService.startTorrent(hash).subscribe(() => {
+    this._torrentService.startTorrent(hash).subscribe(() => {
       this.getTorrents();
-    })
+    });
   }
 
   pauseTorrent(hash: string) {
-    this.torrentService.pauseTorrent(hash).subscribe(() => {
+    this._torrentService.pauseTorrent(hash).subscribe(() => {
       this.getTorrents();
-    })
+    });
   }
 
   deleteTorrent(hash: string) {
-    this.torrentService.deleteTorrent(hash).subscribe((data: Torrent) => {
-      this.torrents.data = this.torrents.data.filter(item => item.Hash !== data.Hash);
-    })
+    this._torrentService.deleteTorrent(hash).subscribe((data: Torrent) => {
+      this.torrents.data = this.torrents.data.filter(
+        (item) => item.Hash !== data.Hash
+      );
+    });
   }
 }
