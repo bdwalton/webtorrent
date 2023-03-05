@@ -1,5 +1,6 @@
 import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { TorrentComponent } from './torrent/torrent.component';
 import { TorrentDetailsComponent } from './torrent-details/torrent-details.component';
 import { TorrentStatusComponent } from './torrentstatus/torrentstatus.component';
@@ -30,6 +31,12 @@ const routes: Routes = [
     path: 'showconfig',
     component: ServerConfigComponent,
     title: "WebTorrent - WebTorrent Server Config"
+  },
+  {
+    path: '**',
+    pathMatch: 'full',
+    component: PageNotFoundComponent,
+    title: "Page Not Found"
   },
 ];
 

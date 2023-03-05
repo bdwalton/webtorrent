@@ -28,6 +28,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { TorrentDetailsComponent } from './torrent-details/torrent-details.component';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { TorrentDetailsComponent } from './torrent-details/torrent-details.compo
     ServerConfigComponent,
     AddTorrentDialogComponent,
     TorrentDetailsComponent,
+    PageNotFoundComponent,
   ],
   imports: [
     BrowserModule,
