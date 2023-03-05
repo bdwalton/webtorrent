@@ -20,23 +20,25 @@ type BasicMetaData struct {
 }
 
 type Torrent struct {
-	URI        string `json:uri`
-	Name       string `json:name`
-	Hash       string `json:hash`
-	Running    bool   `json:running`
-	Done       bool   `json:done`
-	BytesDown  int64  `json:bytesdown`
-	BytesTotal int64  `json:bytestotal`
+	URI           string    `json:uri`
+	Name          string    `json:name`
+	Hash          string    `json:hash`
+	Running       bool      `json:running`
+	Done          bool      `json:done`
+	BytesDown     int64     `json:bytesdown`
+	BytesTotal    int64     `json:bytestotal`
+	TotalProgress *Progress `json:bytestotal`
 }
 
 func FromTorrentData(md *BasicMetaData) *Torrent {
 	t := &Torrent{
-		URI:        md.URI,
-		Name:       md.T.Name(),
-		Hash:       md.T.InfoHash().HexString(),
-		Running:    md.Running,
-		BytesDown:  md.T.BytesCompleted(),
-		BytesTotal: md.T.Length(),
+		URI:           md.URI,
+		Name:          md.T.Name(),
+		Hash:          md.T.InfoHash().HexString(),
+		Running:       md.Running,
+		BytesDown:     md.T.BytesCompleted(),
+		BytesTotal:    md.T.Length(),
+		TotalProgress: newProgress(md.T.BytesCompleted(), md.T.Length()),
 	}
 	t.Done = (t.BytesDown == t.BytesTotal)
 	return t
@@ -45,9 +47,10 @@ func FromTorrentData(md *BasicMetaData) *Torrent {
 // torrentFile is an internal container for storing additional info
 // about each file in a torrent.
 type torrentFile struct {
-	Path       string `json:path`
-	BytesDown  int64  `json:bytesdown`
-	BytesTotal int64  `json:bytestotal`
+	Path         string    `json:path`
+	BytesDown    int64     `json:bytesdown`
+	BytesTotal   int64     `json:bytestotal`
+	FileProgress *Progress `json:fileprogress`
 }
 
 // TorrentDetails is what we'll serialize to json to service requests
@@ -55,6 +58,15 @@ type torrentFile struct {
 type TorrentDetails struct {
 	Torrent
 	Files []*torrentFile `json:files`
+}
+
+type Progress struct {
+	BytesDown  int64 `json:bytesdown`
+	BytesTotal int64 `json:bytestotal`
+}
+
+func newProgress(d, t int64) *Progress {
+	return &Progress{BytesDown: d, BytesTotal: t}
 }
 
 func TorrentDetailsFromData(md *BasicMetaData) *TorrentDetails {
@@ -65,9 +77,10 @@ func TorrentDetailsFromData(md *BasicMetaData) *TorrentDetails {
 
 	for _, f := range md.T.Files() {
 		fd := &torrentFile{
-			Path:       f.Path(),
-			BytesDown:  f.BytesCompleted(),
-			BytesTotal: f.Length(),
+			Path:         f.Path(),
+			BytesDown:    f.BytesCompleted(),
+			BytesTotal:   f.Length(),
+			FileProgress: newProgress(f.BytesCompleted(), f.Length()),
 		}
 		td.Files = append(td.Files, fd)
 	}
