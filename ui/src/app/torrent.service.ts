@@ -1,49 +1,63 @@
 import { Injectable } from '@angular/core';
-
 import { HttpClient } from '@angular/common/http';
-
 import { environment } from '../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TorrentService {
-
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient) {}
 
   getTorrents() {
-    return this.httpClient.get<Torrent[]>(environment.gateway + '/v1/torrent')
+    return this.httpClient.get<Torrent[]>(environment.gateway + '/v1/torrent');
   }
 
   addTorrent(uri: string) {
     var uriData = new TorrentTextData(uri);
-    return this.httpClient.post<Torrent>(environment.gateway + '/v1/torrent', uriData);
+    return this.httpClient.post<Torrent>(
+      environment.gateway + '/v1/torrent',
+      uriData
+    );
   }
 
   startTorrent(hash: string) {
     var hashData = new TorrentTextData(hash);
-    return this.httpClient.put(environment.gateway + '/v1/torrent/start', hashData);
+    return this.httpClient.put(
+      environment.gateway + '/v1/torrent/start',
+      hashData
+    );
   }
 
   pauseTorrent(hash: string) {
     var hashData = new TorrentTextData(hash);
-    return this.httpClient.put(environment.gateway + '/v1/torrent/pause', hashData);
- }
+    return this.httpClient.put(
+      environment.gateway + '/v1/torrent/pause',
+      hashData
+    );
+  }
 
   deleteTorrent(hash: string) {
-    return this.httpClient.delete<Torrent>(environment.gateway + '/v1/torrent/' + hash);
+    return this.httpClient.delete<Torrent>(
+      environment.gateway + '/v1/torrent/' + hash
+    );
   }
 
   getTorrentDetails(hash: string) {
-    return this.httpClient.get<TorrentDetails>(environment.gateway + '/v1/torrentdetails/' + hash)
+    return this.httpClient.get<TorrentDetails>(
+      environment.gateway + '/v1/torrentdetails/' + hash
+    );
   }
 
   getStatus() {
-    return this.httpClient.get<TorrentTextData>(environment.gateway + '/v1/torrentstatus');
+    return this.httpClient.get<TorrentTextData>(
+      environment.gateway + '/v1/torrentstatus'
+    );
   }
 
   getConfig() {
-    return this.httpClient.get<TorrentTextData>(environment.gateway + '/v1/showconfig');
+    return this.httpClient.get<TorrentTextData>(
+      environment.gateway + '/v1/showconfig'
+    );
   }
 }
 
