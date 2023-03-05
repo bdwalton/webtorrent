@@ -27,6 +27,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { TorrentDetailsComponent } from './torrent-details/torrent-details.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     FileSizeFormatterPipe,
     ServerConfigComponent,
     AddTorrentDialogComponent,
+    TorrentDetailsComponent,
   ],
   imports: [
     BrowserModule,
