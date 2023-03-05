@@ -34,6 +34,10 @@ export class TorrentService {
     return this.httpClient.delete<Torrent>(environment.gateway + '/v1/torrent/' + hash);
   }
 
+  getTorrentDetails(hash: string) {
+    return this.httpClient.get<TorrentDetails>(environment.gateway + '/v1/torrentdetails/' + hash)
+  }
+
   getStatus() {
     return this.httpClient.get<TorrentTextData>(environment.gateway + '/v1/torrentstatus');
   }
@@ -58,4 +62,18 @@ export class TorrentTextData {
     this.Data = uri;
   }
   Data: string = '';
+}
+
+export class TorrentFile {
+  Path: string = '';
+  BytesDown: number = 0;
+  BytesTotal: number = 0;
+}
+
+export class TorrentDetails extends Torrent {
+  public constructor() {
+    super();
+  }
+
+  Files: TorrentFile[] = [];
 }
