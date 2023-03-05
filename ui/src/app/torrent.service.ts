@@ -72,8 +72,6 @@ export class Torrent {
   Name: string = '';
   Running: boolean = false;
   Done: boolean = false;
-  BytesDown: number = 0;
-  BytesTotal: number = 0;
   TotalProgress: Progress = new Progress();
 }
 
@@ -86,8 +84,6 @@ export class TorrentTextData {
 
 export class TorrentFile {
   Path: string = '';
-  BytesDown: number = 0;
-  BytesTotal: number = 0;
   FileProgress: Progress = new Progress();
 }
 
