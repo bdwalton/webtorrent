@@ -1,1 +1,31 @@
-<p>torrent-details works!</p>
+<mat-toolbar>
+  <span>Torrent Details</span>
+  <!-- <span class="torrent-toolbar-spacer"></span> -->
+  <!-- <button mat-mini-fab color="accent" aria-label="Add torrent" (click)="openDialog()"> -->
+  <!--   <mat-icon>add_circle</mat-icon> -->
+  <!-- </button> -->
+</mat-toolbar>
+
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>{{ torrent.Name }}</mat-card-title>
+    <mat-card-subtitle>
+      <a href="{{ torrent.URI }}">Magnet URI</a>
+    </mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <table>
+      <tr>
+        <th>Filename</th>
+        <th>Progress</th>
+      </tr>
+      <tr *ngFor="let file of torrent.Files">
+        <td> {{ file.Path }}</td>
+        <td>
+          {{ file.BytesDown / file.BytesTotal * 100 | number: '1.2-2'}}%
+          ({{ file.BytesDown | fileSizeFormatter}} / {{ file.BytesTotal | fileSizeFormatter}})
+        </td>
+      </tr>
+    </table>
+  </mat-card-content>
+</mat-card>
