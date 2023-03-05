@@ -9,10 +9,10 @@
 <mat-card>
   <mat-card-header>
     <mat-card-title>
-      {{ torrent.Name }}
       <a [href]="sanitize(torrent.URI)">
         <mat-icon>link</mat-icon>
       </a>
+      {{ torrent.Name }}
     </mat-card-title>
   </mat-card-header>
   <mat-card-content>
