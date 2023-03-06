@@ -48,7 +48,8 @@
   <ng-container matColumnDef="Controls">
     <th mat-header-cell *matHeaderCellDef>Controls</th>
     <td mat-cell *matCellDef="let torrent">
-      <div class="torrent-button-container">
+      <div class="torrent-controls-container">
+        <span class="torrent-controls-spacer"></span>
         <button
           *ngIf="!torrent.Running && !torrent.Done"
           mat-mini-fab
