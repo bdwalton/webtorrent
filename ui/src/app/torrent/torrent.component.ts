@@ -45,9 +45,9 @@ export class TorrentComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.getTorrents();
-    // this.interval = setInterval(() => {
-    //   this.getTorrents();
-    // }, 5000);
+    this.interval = setInterval(() => {
+      this.getTorrents();
+    }, 5000);
   }
 
   ngAfterViewInit() {
