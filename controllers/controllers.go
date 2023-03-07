@@ -61,12 +61,31 @@ func StartTorrent(c *gin.Context) {
 			Detail: "Call to StartTorrent() unable to parse input.",
 		}
 		c.JSON(http.StatusBadRequest, m)
+		return
 	}
 
-	// if err := srv.startTorrent(td.Data); err != nil {
+	t := srv.client.GetTorrent(td.ID)
+	if t == nil {
+		log.Printf("WebTorrent: Unknown Torrent ID %q: %v", td.ID)
+		m := &models.APIError{
+			Error:  "Unknown Torrent",
+			Detail: "Unknown Torrent ID.",
+		}
+		c.JSON(http.StatusBadRequest, m)
+		return
+	}
 
-	c.JSON(http.StatusOK, "")
+	if err := t.Start(); err != nil {
+		log.Printf("WebTorrent: Failed to start Torrent %q: %v", td.ID, err)
+		m := &models.APIError{
+			Error:  "Failed to start Torrent",
+			Detail: "Failed to start Torrent ID.",
+		}
+		c.JSON(http.StatusInternalServerError, m)
+		return
+	}
 
+	c.JSON(http.StatusOK, models.BasicTorrentDataFromTorrent(t))
 }
 
 func PauseTorrent(c *gin.Context) {
