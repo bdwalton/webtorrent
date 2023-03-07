@@ -31,7 +31,7 @@ export class TorrentComponent implements OnInit, AfterViewInit {
   interval: number = 0;
   torrents = new MatTableDataSource<Torrent>([]);
 
-  displayedColumns: string[] = ['Name', 'Progress', 'Controls'];
+  displayedColumns: string[] = ['Name', 'Status', 'Progress', 'Controls'];
 
   constructor(
     public dialog: MatDialog,
