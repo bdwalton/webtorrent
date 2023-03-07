@@ -69,7 +69,7 @@ export class Torrent {
   URI: string = '';
   Hash: string = '';
   Name: string = '';
-  Status: number = 0;
+  Status: string = '';
   TotalProgress: Progress = new Progress();
 }
 
