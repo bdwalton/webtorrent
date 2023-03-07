@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { TorrentService, TorrentTextData } from '../torrent.service';
+import { TorrentService, ServerData } from '../torrent.service';
 
 @Component({
   selector: 'app-torrentstatus',
@@ -17,7 +17,7 @@ export class TorrentStatusComponent implements OnInit {
   }
 
   getStatus() {
-    this._torrentService.getStatus().subscribe((data: TorrentTextData) => {
+    this._torrentService.getStatus().subscribe((data: ServerData) => {
       this.status = data.Data;
     });
   }

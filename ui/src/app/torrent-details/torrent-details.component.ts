@@ -16,11 +16,11 @@ import {
   styleUrls: ['./torrent-details.component.scss'],
 })
 export class TorrentDetailsComponent implements OnInit, AfterViewInit {
-  hash: string = '';
+  id: string = ''; // The unique id for the torrent
   torrent: TorrentDetails = new TorrentDetails();
   torrentFiles = new MatTableDataSource<TorrentFile>([]);
 
-  displayedColumns: string[] = ['Path', 'Progress'];
+  displayedColumns: string[] = ['Path'];
 
   constructor(
     private _route: ActivatedRoute,
@@ -34,10 +34,10 @@ export class TorrentDetailsComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this._route.paramMap.subscribe((params: ParamMap) => {
-      this.hash = params.get('hash') as string;
+      this.id = params.get('id') as string;
     });
 
-    this.getTorrentDetails(this.hash);
+    this.getTorrentDetails(this.id);
   }
 
   ngAfterViewInit() {

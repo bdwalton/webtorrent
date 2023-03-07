@@ -13,49 +13,43 @@ export class TorrentService {
   }
 
   addTorrent(uri: string) {
-    var uriData = new TorrentTextData(uri);
+    var turi = new TorrentURI(uri);
     return this.httpClient.post<Torrent>(
       environment.gateway + '/v1/torrent',
-      uriData
+      turi
     );
   }
 
-  startTorrent(hash: string) {
-    var hashData = new TorrentTextData(hash);
-    return this.httpClient.put(
-      environment.gateway + '/v1/torrent/start',
-      hashData
-    );
+  startTorrent(id: string) {
+    var tid = new TorrentID(id);
+    return this.httpClient.put(environment.gateway + '/v1/torrent/start', tid);
   }
 
-  pauseTorrent(hash: string) {
-    var hashData = new TorrentTextData(hash);
-    return this.httpClient.put(
-      environment.gateway + '/v1/torrent/pause',
-      hashData
-    );
+  pauseTorrent(id: string) {
+    var tid = new TorrentID(id);
+    return this.httpClient.put(environment.gateway + '/v1/torrent/pause', tid);
   }
 
-  deleteTorrent(hash: string) {
+  deleteTorrent(id: string) {
     return this.httpClient.delete<Torrent>(
-      environment.gateway + '/v1/torrent/' + hash
+      environment.gateway + '/v1/torrent/' + id
     );
   }
 
-  getTorrentDetails(hash: string) {
+  getTorrentDetails(id: string) {
     return this.httpClient.get<TorrentDetails>(
-      environment.gateway + '/v1/torrentdetails/' + hash
+      environment.gateway + '/v1/torrentdetails/' + id
     );
   }
 
   getStatus() {
-    return this.httpClient.get<TorrentTextData>(
+    return this.httpClient.get<ServerData>(
       environment.gateway + '/v1/torrentstatus'
     );
   }
 
   getConfig() {
-    return this.httpClient.get<TorrentTextData>(
+    return this.httpClient.get<ServerData>(
       environment.gateway + '/v1/showconfig'
     );
   }
@@ -66,25 +60,17 @@ export class Progress {
   BytesTotal: number = 0;
 }
 
+export class TorrentFile {
+  Path: string = '';
+}
+
 export class Torrent {
+  ID: string = '';
   URI: string = '';
   Hash: string = '';
   Name: string = '';
-  Running: boolean = false;
-  Done: boolean = false;
+  Status: number = 0;
   TotalProgress: Progress = new Progress();
-}
-
-export class TorrentTextData {
-  public constructor(uri: string) {
-    this.Data = uri;
-  }
-  Data: string = '';
-}
-
-export class TorrentFile {
-  Path: string = '';
-  FileProgress: Progress = new Progress();
 }
 
 export class TorrentDetails extends Torrent {
@@ -93,4 +79,22 @@ export class TorrentDetails extends Torrent {
   }
 
   Files: TorrentFile[] = [];
+}
+
+export class TorrentURI {
+  public constructor(uri: string) {
+    this.URI = uri;
+  }
+  URI: string = '';
+}
+
+export class TorrentID {
+  public constructor(id: string) {
+    this.ID = id;
+  }
+  ID: string = '';
+}
+
+export class ServerData {
+  Data: string = '';
 }

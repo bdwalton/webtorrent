@@ -10,38 +10,38 @@ const routes: Routes = [
   {
     path: '',
     redirectTo: 'torrent',
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
   {
     path: 'torrent',
     component: TorrentComponent,
-    title: "WebTorrent - Torrents"
+    title: 'WebTorrent - Torrents',
   },
   {
-    path: 'torrentdetails/:hash',
+    path: 'torrentdetails/:id',
     component: TorrentDetailsComponent,
-    title: "WebTorrent - Torrent Details"
+    title: 'WebTorrent - Torrent Details',
   },
   {
     path: 'torrentstatus',
     component: TorrentStatusComponent,
-    title: "WebTorrent - Torrent Client Status"
+    title: 'WebTorrent - Torrent Client Status',
   },
   {
     path: 'showconfig',
     component: ServerConfigComponent,
-    title: "WebTorrent - WebTorrent Server Config"
+    title: 'WebTorrent - WebTorrent Server Config',
   },
   {
     path: '**',
     pathMatch: 'full',
     component: PageNotFoundComponent,
-    title: "Page Not Found"
+    title: 'Page Not Found',
   },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
