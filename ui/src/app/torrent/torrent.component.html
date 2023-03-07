@@ -30,7 +30,7 @@
       Name
     </th>
     <td mat-cell *matCellDef="let torrent">
-      <a routerLink="/torrentdetails/{{ torrent.Hash }}">
+      <a routerLink="/torrentdetails/{{ torrent.ID }}">
         {{ torrent.Name }}
       </a>
     </td>
@@ -55,7 +55,7 @@
           mat-mini-fab
           color="primary"
           aria-label="Start torrent"
-          (click)="startTorrent(torrent.Hash)"
+          (click)="startTorrent(torrent.ID)"
         >
           <mat-icon>play_arrow</mat-icon>
         </button>
@@ -64,7 +64,7 @@
           mat-mini-fab
           color="primary"
           aria-label="Pause torrent"
-          (click)="pauseTorrent(torrent.Hash)"
+          (click)="pauseTorrent(torrent.ID)"
         >
           <mat-icon>pause</mat-icon>
         </button>
@@ -72,7 +72,7 @@
           mat-mini-fab
           color="warn"
           aria-label="Delete torrent"
-          (click)="deleteTorrent(torrent.Hash)"
+          (click)="deleteTorrent(torrent.ID)"
         >
           <mat-icon>delete</mat-icon>
         </button>
