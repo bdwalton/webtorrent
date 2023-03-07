@@ -1,28 +1,28 @@
 package controllers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
 
 	"github.com/bdwalton/webtorrent/models"
+	"github.com/cenkalti/rain/torrent"
 	"github.com/gin-gonic/gin"
 )
 
 func GetTorrents(c *gin.Context) {
-	torrents := []*models.Torrent{}
-	for _, md := range srv.torrents {
-		torrents = append(torrents, models.FromTorrentData(md))
+	torrents := []*models.BasicTorrentData{}
+	for _, t := range srv.client.ListTorrents() {
+		torrents = append(torrents, models.BasicTorrentDataFromTorrent(t))
 	}
 
 	c.JSON(http.StatusOK, torrents)
 }
 
 func AddTorrent(c *gin.Context) {
-	var td models.TextData
+	var tu models.TorrentURI
 
-	if err := c.BindJSON(&td); err != nil {
+	if err := c.BindJSON(&tu); err != nil {
 		m := &models.APIError{
 			Error:  "Failed to parse request",
 			Detail: "Call to AddTorrent() unable to parse input.",
@@ -30,34 +30,32 @@ func AddTorrent(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, m)
 	}
 
-	uri := td.Data
-
-	md, err := srv.registerTorrent(uri)
-	if err != nil {
-		log.Printf("WebTorrent: StartTorrent() call to registerTorrent() failed: %v", err)
+	if !strings.HasPrefix(tu.URI, "magnet:") {
 		m := &models.APIError{
-			Error:  "Failed to register URI.",
-			Detail: "Unable to register the URI in the server. See error logs for details.",
+			Error:  "Invalid URI.",
+			Detail: "Non-magnet URI supplied. We only accept magnet URI.",
+		}
+		c.JSON(http.StatusBadRequest, m)
+	}
+
+	// TODO: Add config knobs for AddTorrentOptions
+	t, err := srv.client.AddURI(tu.URI, &torrent.AddTorrentOptions{Stopped: true})
+	if err != nil {
+		log.Printf("WebTorrent: Error adding URI %q: %v", tu.URI, err)
+		m := &models.APIError{
+			Error:  "Failed to consume URI",
+			Detail: "Call to AddTorrent() unable to add URI..",
 		}
 		c.JSON(http.StatusInternalServerError, m)
 	}
 
-	// Return the to client before we do the rest of the setup as
-	// that can block for a long time.
-	c.JSON(http.StatusOK, models.FromTorrentData(md))
-
-	// TODO(bdwalton): This can be problematic as it may return
-	// very late or sometimes "never." Put it in a goroutine and
-	// treat it as a failure after a timeout? That would still
-	// leak whatever resources the torrent client itself is
-	// consuming.
-	<-md.T.GotInfo()
+	c.JSON(http.StatusOK, models.BasicTorrentDataFromTorrent(t))
 }
 
 func StartTorrent(c *gin.Context) {
-	var td models.TextData
-
+	var td models.TorrentID
 	if err := c.BindJSON(&td); err != nil {
+		log.Printf("WebTorrent: Failed to parse TorrentID: %v", err)
 		m := &models.APIError{
 			Error:  "Failed to parse request",
 			Detail: "Call to StartTorrent() unable to parse input.",
@@ -65,24 +63,17 @@ func StartTorrent(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, m)
 	}
 
-	if err := srv.startTorrent(td.Data); err != nil {
-		log.Printf("WebTorrent: Failed to start torrent: %v", err)
-		m := &models.APIError{
-			Error:  "Failed to start torrent.",
-			Detail: "Call to StartTorrent() failed. See error logs for details.",
-		}
-		c.JSON(http.StatusBadRequest, m)
-		return
-	}
+	// if err := srv.startTorrent(td.Data); err != nil {
 
 	c.JSON(http.StatusOK, "")
 
 }
 
 func PauseTorrent(c *gin.Context) {
-	var td models.TextData
+	var td models.TorrentID
 
 	if err := c.BindJSON(&td); err != nil {
+		log.Printf("WebTorrent: Failed to parse TorrentID: %v", err)
 		m := &models.APIError{
 			Error:  "Failed to parse request",
 			Detail: "Call to PauseTorrent() unable to parse input.",
@@ -90,82 +81,46 @@ func PauseTorrent(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, m)
 	}
 
-	if err := srv.pauseTorrent(td.Data); err != nil {
-		log.Printf("WebTorrent: Failed to pause torrent: %v", err)
-		m := &models.APIError{
-			Error:  "Failed to pause torrent",
-			Detail: "Call to PauseTorrent() unable to complete request. See error logs for details.",
-		}
-		c.JSON(http.StatusInternalServerError, m)
-	}
+	//	if err := srv.pauseTorrent(td.Data); err != nil {
 
 	c.JSON(http.StatusOK, "")
 }
 
 func DeleteTorrent(c *gin.Context) {
-	hash := c.Param("hash")
-	md, ok := srv.torrents[hash]
-	if !ok {
-		m := &models.APIError{
-			Error:  "Unknown torrent",
-			Detail: fmt.Sprintf("Torrent %q isn't known by the server.", hash),
-		}
-		c.JSON(http.StatusBadRequest, m)
-		return
-	}
+	// hash := c.Param("hash")
+	// md, ok := srv.torrents[hash]
 
-	if err := srv.dropTorrent(hash); err != nil {
-		log.Printf("WebTorrent: Error dropping torrent: %v", err)
-		m := &models.APIError{
-			Error:  "Failed to delete torrent",
-			Detail: "Cleaning up the torrent failed, see error logs for details.",
-		}
-		c.JSON(http.StatusInternalServerError, m)
-		return
-	}
-
-	c.JSON(http.StatusOK, models.FromTorrentData(md))
+	c.JSON(http.StatusOK, "")
 }
 
 func TorrentDetails(c *gin.Context) {
-	hash := c.Param("hash")
-	_, ok := srv.torrents[hash]
-	if !ok {
-		m := &models.APIError{
-			Error:  "Unknown torrent",
-			Detail: fmt.Sprintf("Torrent %q isn't known by the server.", hash),
-		}
-		c.JSON(http.StatusBadRequest, m)
-		return
-	}
+	// hash := c.Param("hash")
 
-	d, err := srv.torrentDetails(hash)
-	if err != nil {
-		log.Printf("WebTorrent: Error dropping torrent: %v", err)
-		m := &models.APIError{
-			Error:  "Failed to delete torrent",
-			Detail: "Cleaning up the torrent failed, see error logs for details.",
-		}
-		c.JSON(http.StatusInternalServerError, m)
-		return
-	}
+	// if !found {
+	// 	m := &models.APIError{
+	// 		Error:  "Unknown torrent",
+	// 		Detail: fmt.Sprintf("Torrent %q isn't known by the server.", hash),
+	// 	}
+	// 	c.JSON(http.StatusBadRequest, m)
+	// 	return
+	// }
 
-	c.JSON(http.StatusOK, d)
+	// d, err := srv.torrentDetails(hash)
+
+	c.JSON(http.StatusOK, "")
 }
 
 func TorrentStatus(c *gin.Context) {
 	s := strings.Builder{}
-	srv.client.WriteStatus(&s)
-	c.JSON(http.StatusOK, models.TextDataFromString(s.String()))
+	c.JSON(http.StatusOK, models.ServerData{Data: s.String()})
 }
 
 func ShowConfig(c *gin.Context) {
 	s := strings.Builder{}
 	srv.cfg.WriteTo(&s)
-	c.JSON(http.StatusOK, models.TextDataFromString(s.String()))
+	c.JSON(http.StatusOK, models.ServerData{Data: s.String()})
 }
 
-func ShutdownTorrentClient() {
-	srv.client.Close()
-	<-srv.client.Closed()
+func ShutdownTorrentClient() error {
+	return srv.client.Close()
 }
