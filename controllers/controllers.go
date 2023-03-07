@@ -90,19 +90,38 @@ func StartTorrent(c *gin.Context) {
 
 func PauseTorrent(c *gin.Context) {
 	var td models.TorrentID
-
 	if err := c.BindJSON(&td); err != nil {
 		log.Printf("WebTorrent: Failed to parse TorrentID: %v", err)
 		m := &models.APIError{
 			Error:  "Failed to parse request",
-			Detail: "Call to PauseTorrent() unable to parse input.",
+			Detail: "Call to StartTorrent() unable to parse input.",
 		}
 		c.JSON(http.StatusBadRequest, m)
+		return
 	}
 
-	//	if err := srv.pauseTorrent(td.Data); err != nil {
+	t := srv.client.GetTorrent(td.ID)
+	if t == nil {
+		log.Printf("WebTorrent: Unknown Torrent ID %q: %v", td.ID)
+		m := &models.APIError{
+			Error:  "Unknown Torrent",
+			Detail: "Unknown Torrent ID.",
+		}
+		c.JSON(http.StatusBadRequest, m)
+		return
+	}
 
-	c.JSON(http.StatusOK, "")
+	if err := t.Start(); err != nil {
+		log.Printf("WebTorrent: Failed to pause Torrent %q: %v", td.ID, err)
+		m := &models.APIError{
+			Error:  "Failed to pause Torrent",
+			Detail: "Failed to pause Torrent ID.",
+		}
+		c.JSON(http.StatusInternalServerError, m)
+		return
+	}
+
+	c.JSON(http.StatusOK, models.BasicTorrentDataFromTorrent(t))
 }
 
 func DeleteTorrent(c *gin.Context) {
