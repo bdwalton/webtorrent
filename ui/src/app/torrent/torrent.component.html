@@ -51,7 +51,7 @@
       <div class="torrent-controls-container">
         <span class="torrent-controls-spacer"></span>
         <button
-          *ngIf="!torrent.Running && !torrent.Done"
+          *ngIf="torrent.Status === 'Stopped'"
           mat-mini-fab
           color="primary"
           aria-label="Start torrent"
@@ -60,7 +60,7 @@
           <mat-icon>play_arrow</mat-icon>
         </button>
         <button
-          *ngIf="torrent.Running && !torrent.Done"
+          *ngIf="torrent.Status !== 'Stopped'"
           mat-mini-fab
           color="primary"
           aria-label="Pause torrent"
