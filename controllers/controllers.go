@@ -111,7 +111,7 @@ func PauseTorrent(c *gin.Context) {
 		return
 	}
 
-	if err := t.Start(); err != nil {
+	if err := t.Stop(); err != nil {
 		log.Printf("WebTorrent: Failed to pause Torrent %q: %v", td.ID, err)
 		m := &models.APIError{
 			Error:  "Failed to pause Torrent",
