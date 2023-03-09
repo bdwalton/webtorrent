@@ -21,6 +21,7 @@ import {
   AddTorrentDialogComponent,
   DialogData,
 } from '../add-torrent-dialog/add-torrent-dialog.component';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-torrent',
@@ -91,6 +92,20 @@ export class TorrentComponent implements OnInit, AfterViewInit {
             duration: 5000,
           }
         );
+      }
+    });
+  }
+
+  confirmDeleteDialog(id: string) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      disableClose: false,
+    });
+
+    dialogRef.componentInstance.confirmMessage =
+      'Removing a Torrent deletes the data. Are you sure?';
+    dialogRef.afterClosed().subscribe((result: string) => {
+      if (result) {
+        this.deleteTorrent(id);
       }
     });
   }
