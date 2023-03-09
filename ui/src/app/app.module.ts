@@ -31,6 +31,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { TorrentDetailsComponent } from './torrent-details/torrent-details.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ProgressComponentComponent } from './progress-component/progress-component.component';
+import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { ProgressComponentComponent } from './progress-component/progress-compon
     TorrentDetailsComponent,
     PageNotFoundComponent,
     ProgressComponentComponent,
+    ConfirmDialogComponent,
   ],
   imports: [
     BrowserModule,
