@@ -113,20 +113,20 @@ export class TorrentComponent implements OnInit, AfterViewInit {
     });
   }
 
-  startTorrent(hash: string) {
-    this._torrentService.startTorrent(hash).subscribe(() => {
+  startTorrent(id: string) {
+    this._torrentService.startTorrent(id).subscribe(() => {
       this.getTorrents();
     });
   }
 
-  pauseTorrent(hash: string) {
-    this._torrentService.pauseTorrent(hash).subscribe(() => {
+  pauseTorrent(id: string) {
+    this._torrentService.pauseTorrent(id).subscribe(() => {
       this.getTorrents();
     });
   }
 
-  deleteTorrent(hash: string) {
-    this._torrentService.deleteTorrent(hash).subscribe((data: Torrent) => {
+  deleteTorrent(id: string) {
+    this._torrentService.deleteTorrent(id).subscribe((data: Torrent) => {
       this.torrents.data = this.torrents.data.filter(
         (item) => item.Hash !== data.Hash
       );
