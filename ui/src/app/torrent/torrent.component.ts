@@ -67,10 +67,10 @@ export class TorrentComponent implements OnInit, AfterViewInit {
   @HostListener('window:keydown.a', ['$event'])
   triggerDialog(event: KeyboardEvent) {
     event.preventDefault();
-    this.openDialog();
+    this.addTorrentDialog();
   }
 
-  openDialog(): void {
+  addTorrentDialog(): void {
     const dialogRef = this.dialog.open(AddTorrentDialogComponent, {
       data: { uri: '' },
     });
