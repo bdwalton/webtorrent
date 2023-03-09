@@ -39,7 +39,7 @@ func Init() {
 		v1.POST("/torrent", controllers.AddTorrent)
 		v1.PUT("/torrent/start", controllers.StartTorrent)
 		v1.PUT("/torrent/pause", controllers.PauseTorrent)
-		v1.DELETE("/torrent/:hash", controllers.DeleteTorrent)
+		v1.DELETE("/torrent/:id", controllers.DeleteTorrent)
 
 		// Torrent details interaction calls
 		v1.GET("/torrentdetails/:hash", controllers.TorrentDetails)

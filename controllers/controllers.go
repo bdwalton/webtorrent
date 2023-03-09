@@ -125,10 +125,29 @@ func PauseTorrent(c *gin.Context) {
 }
 
 func DeleteTorrent(c *gin.Context) {
-	// hash := c.Param("hash")
-	// md, ok := srv.torrents[hash]
+	tid := c.Param("id")
+	t := srv.client.GetTorrent(tid)
+	if t == nil {
+		log.Printf("WebTorrent: Unknown Torrent ID %q", tid)
+		m := &models.APIError{
+			Error:  "Unknown Torrent",
+			Detail: "Unknown Torrent ID.",
+		}
+		c.JSON(http.StatusBadRequest, m)
+		return
+	}
 
-	c.JSON(http.StatusOK, "")
+	if err := srv.client.RemoveTorrent(tid); err != nil {
+		log.Printf("WebTorrent: Failed to remote Torrent %q: %v", tid, err)
+		m := &models.APIError{
+			Error:  "Failed to remove Torrent",
+			Detail: "Failed to remove Torrent ID.",
+		}
+		c.JSON(http.StatusInternalServerError, m)
+		return
+	}
+
+	c.JSON(http.StatusOK, models.BasicTorrentDataFromTorrent(t))
 }
 
 func TorrentDetails(c *gin.Context) {
