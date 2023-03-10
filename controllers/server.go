@@ -41,13 +41,16 @@ type server struct {
 	mtx    sync.Mutex
 }
 
-func (s *server) autoStartTorrents() bool {
-	switch s.cfg.Section("torrent").Key("autostart").String() {
-	case "true":
-		return true
-	default:
-		return false
-	}
+func (s *server) stopOnAdd() bool {
+	return s.cfg.Section("torrent").Key("stop_on_add").String() == "true"
+}
+
+func (s *server) stopAfterDownload() bool {
+	return s.cfg.Section("torrent").Key("stop_on_complete").String() == "true"
+}
+
+func (s *server) stopAfterMetadata() bool {
+	return s.cfg.Section("torrent").Key("stop_after_metadata").String() == "true"
 }
 
 func makeTorrentConfig(cfg *ini.File) torrent.Config {
