@@ -41,11 +41,21 @@ type server struct {
 	mtx    sync.Mutex
 }
 
-// datadir returns the torrent.datadir key from the config as a
-// string. This is a small helper because we reference this
-// frequently.
-func (s *server) datadir() string {
-	return s.cfg.Section("torrent").Key("datadir").String()
+func (s *server) autoStartTorrents() bool {
+	switch s.cfg.Section("torrent").Key("autostart").String() {
+	case "true":
+		return true
+	default:
+		return false
+	}
+}
+
+func makeTorrentConfig(cfg *ini.File) torrent.Config {
+	tcfg := torrent.DefaultConfig
+	tcfg.RPCEnabled = false
+	tcfg.DataDir = cfg.Section("torrent").Key("datadir").String()
+
+	return tcfg
 }
 
 // Init will create the global srv object and populate it with a
@@ -54,10 +64,7 @@ func (s *server) datadir() string {
 func Init(cfg *ini.File) error {
 	srv = &server{cfg: cfg}
 
-	tcfg := torrent.DefaultConfig
-	tcfg.RPCEnabled = false
-	tcfg.DataDir = srv.datadir()
-	tc, err := torrent.NewSession(tcfg)
+	tc, err := torrent.NewSession(makeTorrentConfig(cfg))
 	if err != nil {
 		return fmt.Errorf("Error establishing torrent client: %v\n", err)
 	}

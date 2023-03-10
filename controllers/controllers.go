@@ -49,6 +49,21 @@ func AddTorrent(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, m)
 	}
 
+	if !srv.autoStartTorrents() {
+		c.JSON(http.StatusOK, models.BasicTorrentDataFromTorrent(t))
+		return
+	}
+
+	if err := t.Start(); err != nil {
+		log.Printf("WebTorrent: Failed to start Torrent %q: %v", t.ID(), err)
+		m := &models.APIError{
+			Error:  "Failed to start Torrent",
+			Detail: "Failed to start Torrent ID.",
+		}
+		c.JSON(http.StatusInternalServerError, m)
+		return
+	}
+
 	c.JSON(http.StatusOK, models.BasicTorrentDataFromTorrent(t))
 }
 
