@@ -35,8 +35,7 @@ type TorrentID struct {
 }
 
 type APIError struct {
-	Error  string `json:error`
-	Detail string `json:detail`
+	Details string `json:details`
 }
 
 type ServerData struct {

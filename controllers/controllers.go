@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -24,16 +25,14 @@ func AddTorrent(c *gin.Context) {
 
 	if err := c.BindJSON(&tu); err != nil {
 		m := &models.APIError{
-			Error:  "Failed to parse request",
-			Detail: "Call to AddTorrent() unable to parse input.",
+			Details: "Call to AddTorrent() unable to parse input.",
 		}
 		c.JSON(http.StatusBadRequest, m)
 	}
 
 	if !strings.HasPrefix(tu.URI, "magnet:") {
 		m := &models.APIError{
-			Error:  "Invalid URI.",
-			Detail: "Non-magnet URI supplied. We only accept magnet URI.",
+			Details: "Non-magnet URI supplied. We only accept magnet URI.",
 		}
 		c.JSON(http.StatusBadRequest, m)
 	}
@@ -48,8 +47,7 @@ func AddTorrent(c *gin.Context) {
 	if err != nil {
 		log.Printf("WebTorrent: Error adding URI %q: %v", tu.URI, err)
 		m := &models.APIError{
-			Error:  "Failed to consume URI",
-			Detail: "Call to AddTorrent() unable to add URI..",
+			Details: "Call to AddTorrent() unable to add URI..",
 		}
 		c.JSON(http.StatusInternalServerError, m)
 	}
@@ -62,8 +60,7 @@ func StartTorrent(c *gin.Context) {
 	if err := c.BindJSON(&td); err != nil {
 		log.Printf("WebTorrent: Failed to parse TorrentID: %v", err)
 		m := &models.APIError{
-			Error:  "Failed to parse request",
-			Detail: "Call to StartTorrent() unable to parse input.",
+			Details: "Call to StartTorrent() unable to parse input.",
 		}
 		c.JSON(http.StatusBadRequest, m)
 		return
@@ -73,8 +70,7 @@ func StartTorrent(c *gin.Context) {
 	if t == nil {
 		log.Printf("WebTorrent: Unknown Torrent ID %q: %v", td.ID)
 		m := &models.APIError{
-			Error:  "Unknown Torrent",
-			Detail: "Unknown Torrent ID.",
+			Details: "Unknown Torrent ID.",
 		}
 		c.JSON(http.StatusBadRequest, m)
 		return
@@ -83,8 +79,7 @@ func StartTorrent(c *gin.Context) {
 	if err := t.Start(); err != nil {
 		log.Printf("WebTorrent: Failed to start Torrent %q: %v", td.ID, err)
 		m := &models.APIError{
-			Error:  "Failed to start Torrent",
-			Detail: "Failed to start Torrent ID.",
+			Details: fmt.Sprintf("Failed to start Torrent ID %q.", td.ID),
 		}
 		c.JSON(http.StatusInternalServerError, m)
 		return
@@ -98,8 +93,7 @@ func PauseTorrent(c *gin.Context) {
 	if err := c.BindJSON(&td); err != nil {
 		log.Printf("WebTorrent: Failed to parse TorrentID: %v", err)
 		m := &models.APIError{
-			Error:  "Failed to parse request",
-			Detail: "Call to StartTorrent() unable to parse input.",
+			Details: "Call to PauseTorrent() unable to parse input.",
 		}
 		c.JSON(http.StatusBadRequest, m)
 		return
@@ -109,8 +103,7 @@ func PauseTorrent(c *gin.Context) {
 	if t == nil {
 		log.Printf("WebTorrent: Unknown Torrent ID %q: %v", td.ID)
 		m := &models.APIError{
-			Error:  "Unknown Torrent",
-			Detail: "Unknown Torrent ID.",
+			Details: fmt.Sprintf("Unknown Torrent ID %q.", td.ID),
 		}
 		c.JSON(http.StatusBadRequest, m)
 		return
@@ -119,8 +112,7 @@ func PauseTorrent(c *gin.Context) {
 	if err := t.Stop(); err != nil {
 		log.Printf("WebTorrent: Failed to pause Torrent %q: %v", td.ID, err)
 		m := &models.APIError{
-			Error:  "Failed to pause Torrent",
-			Detail: "Failed to pause Torrent ID.",
+			Details: fmt.Sprintf("Failed to pause Torrent ID %q.", td.ID),
 		}
 		c.JSON(http.StatusInternalServerError, m)
 		return
@@ -135,8 +127,7 @@ func DeleteTorrent(c *gin.Context) {
 	if t == nil {
 		log.Printf("WebTorrent: Unknown Torrent ID %q", tid)
 		m := &models.APIError{
-			Error:  "Unknown Torrent",
-			Detail: "Unknown Torrent ID.",
+			Details: fmt.Sprintf("Unknown Torrent ID %q.", tid),
 		}
 		c.JSON(http.StatusBadRequest, m)
 		return
@@ -145,8 +136,7 @@ func DeleteTorrent(c *gin.Context) {
 	if err := srv.client.RemoveTorrent(tid); err != nil {
 		log.Printf("WebTorrent: Failed to remote Torrent %q: %v", tid, err)
 		m := &models.APIError{
-			Error:  "Failed to remove Torrent",
-			Detail: "Failed to remove Torrent ID.",
+			Details: fmt.Sprintf("Failed to remove Torrent ID %q.", tid),
 		}
 		c.JSON(http.StatusInternalServerError, m)
 		return
@@ -160,8 +150,7 @@ func TorrentDetails(c *gin.Context) {
 
 	// if !found {
 	// 	m := &models.APIError{
-	// 		Error:  "Unknown torrent",
-	// 		Detail: fmt.Sprintf("Torrent %q isn't known by the server.", hash),
+	// 		Details: fmt.Sprintf("Torrent %q isn't known by the server.", hash),
 	// 	}
 	// 	c.JSON(http.StatusBadRequest, m)
 	// 	return

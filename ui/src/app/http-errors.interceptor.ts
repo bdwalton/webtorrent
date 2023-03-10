@@ -30,7 +30,7 @@ export class HttpErrorsInterceptor implements HttpInterceptor {
           });
         } else {
           // Server side.
-          this._snackBar.open('Remote error: ' + err.error.Detail, 'Ok', {
+          this._snackBar.open('Remote error: ' + err.error.Details, 'Ok', {
             duration: 5000,
           });
         }
