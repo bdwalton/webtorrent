@@ -71,6 +71,7 @@ export class Torrent {
   Name: string = '';
   Status: string = '';
   TotalProgress: Progress = new Progress();
+  NumFiles: number = -1;
 }
 
 export class TorrentDetails extends Torrent {

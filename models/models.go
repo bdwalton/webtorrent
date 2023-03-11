@@ -13,16 +13,25 @@ type BasicTorrentData struct {
 	Name          string   `json:name`
 	Status        string   `json:status`
 	TotalProgress Progress `json:progress`
+	NumFiles      int      `json:numfiles`
 }
 
 func BasicTorrentDataFromTorrent(t *torrent.Torrent) BasicTorrentData {
 	s := t.Stats()
+
+	nf := -1
+	f, err := t.FilePaths()
+	if err == nil {
+		nf = len(f)
+	}
+
 	return BasicTorrentData{
 		ID:            t.ID(),
 		Hash:          t.InfoHash().String(),
 		Name:          t.Name(),
 		Status:        s.Status.String(),
 		TotalProgress: Progress{s.Bytes.Completed, s.Bytes.Total},
+		NumFiles:      nf,
 	}
 }
 
