@@ -14,6 +14,9 @@
     </mat-card-title>
   </mat-card-header>
   <mat-card-content>
+    <app-progress-component
+      [prg]="torrent.TotalProgress"
+    ></app-progress-component>
     <table
       mat-table
       [dataSource]="torrentFiles"
