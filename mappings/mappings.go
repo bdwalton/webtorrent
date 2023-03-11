@@ -42,7 +42,7 @@ func Init() {
 		v1.DELETE("/torrent/:id", controllers.DeleteTorrent)
 
 		// Torrent details interaction calls
-		v1.GET("/torrentdetails/:hash", controllers.TorrentDetails)
+		v1.GET("/torrentdetails/:id", controllers.TorrentDetails)
 
 		// Server health diagnostic calls
 		v1.GET("/showconfig", controllers.ShowConfig)
