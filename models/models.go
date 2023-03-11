@@ -35,11 +35,30 @@ func BasicTorrentDataFromTorrent(t *torrent.Torrent) BasicTorrentData {
 	}
 }
 
+type TorrentFile struct {
+	Path string `json:path`
+}
+
 type TorrentData struct {
 	BasicTorrentData
-	Magnet string   `json:magnet`
-	Error  string   `json:error`
-	Files  []string `json:files`
+	Magnet string        `json:magnet`
+	Error  string        `json:error`
+	Files  []TorrentFile `json:files`
+}
+
+func buildTorrentFiles(t *torrent.Torrent) []TorrentFile {
+	fp, err := t.FilePaths()
+	// When the torrent metadata hasn't been retrieved yet.
+	if err != nil {
+		return []TorrentFile{}
+	}
+
+	tf := make([]TorrentFile, 0, len(fp))
+	for _, tfp := range fp {
+		tf = append(tf, TorrentFile{Path: tfp})
+	}
+
+	return tf
 }
 
 func TorrentDataFromTorrent(t *torrent.Torrent) TorrentData {
@@ -49,20 +68,15 @@ func TorrentDataFromTorrent(t *torrent.Torrent) TorrentData {
 		e = s.ETA.String()
 	}
 
-	f, err := t.FilePaths()
-	// When the torrent metadata hasn't been retrieved yet.
-	if err != nil {
-		f = []string{}
-	}
-
-	var m string
-	m, err = t.Magnet()
+	// Private torrents will return an error here. We will just
+	// pass the empty string and let the client handle that case.
+	m, _ := t.Magnet()
 
 	return TorrentData{
 		BasicTorrentData: BasicTorrentDataFromTorrent(t),
 		Magnet:           m,
 		Error:            e,
-		Files:            f,
+		Files:            buildTorrentFiles(t),
 	}
 }
 
