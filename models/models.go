@@ -15,9 +15,9 @@ type BasicTorrentData struct {
 	TotalProgress Progress `json:progress`
 }
 
-func BasicTorrentDataFromTorrent(t *torrent.Torrent) *BasicTorrentData {
+func BasicTorrentDataFromTorrent(t *torrent.Torrent) BasicTorrentData {
 	s := t.Stats()
-	return &BasicTorrentData{
+	return BasicTorrentData{
 		ID:            t.ID(),
 		Hash:          t.InfoHash().String(),
 		Name:          t.Name(),
