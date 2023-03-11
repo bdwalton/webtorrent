@@ -32,6 +32,7 @@ import { TorrentDetailsComponent } from './torrent-details/torrent-details.compo
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ProgressComponentComponent } from './progress-component/progress-component.component';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
+import { TorrentControlsComponent } from './torrent-controls/torrent-controls.component';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
     PageNotFoundComponent,
     ProgressComponentComponent,
     ConfirmDialogComponent,
+    TorrentControlsComponent,
   ],
   imports: [
     BrowserModule,
