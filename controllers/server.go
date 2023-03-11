@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"path/filepath"
 	"sync"
 
 	"github.com/cenkalti/rain/torrent"
@@ -56,7 +57,8 @@ func (s *server) stopAfterMetadata() bool {
 func makeTorrentConfig(cfg *ini.File) torrent.Config {
 	tcfg := torrent.DefaultConfig
 	tcfg.RPCEnabled = false
-	tcfg.DataDir = cfg.Section("torrent").Key("datadir").String()
+	tcfg.DataDir = filepath.Join(cfg.Section("torrent").Key("basedir").String(), "torrents")
+	tcfg.Database = filepath.Join(cfg.Section("torrent").Key("basedir").String(), "metadata")
 
 	return tcfg
 }
