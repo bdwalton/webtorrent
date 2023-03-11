@@ -12,7 +12,7 @@ import (
 )
 
 func GetTorrents(c *gin.Context) {
-	torrents := []*models.BasicTorrentData{}
+	torrents := []models.BasicTorrentData{}
 	for _, t := range srv.client.ListTorrents() {
 		torrents = append(torrents, models.BasicTorrentDataFromTorrent(t))
 	}
