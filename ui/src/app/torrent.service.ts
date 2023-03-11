@@ -80,6 +80,8 @@ export class TorrentDetails extends Torrent {
   }
 
   Files: TorrentFile[] = [];
+  Error: string = '';
+  Magnet: string = '';
 }
 
 export class TorrentURI {
