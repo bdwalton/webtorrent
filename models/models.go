@@ -55,9 +55,12 @@ func TorrentDataFromTorrent(t *torrent.Torrent) TorrentData {
 		f = []string{}
 	}
 
+	var m string
+	m, err = t.Magnet()
+
 	return TorrentData{
 		BasicTorrentData: BasicTorrentDataFromTorrent(t),
-		Magnet:           t.Magnet(),
+		Magnet:           m,
 		Error:            e,
 		Files:            f,
 	}
