@@ -35,6 +35,34 @@ func BasicTorrentDataFromTorrent(t *torrent.Torrent) BasicTorrentData {
 	}
 }
 
+type TorrentData struct {
+	BasicTorrentData
+	Magnet string   `json:magnet`
+	Error  string   `json:error`
+	Files  []string `json:files`
+}
+
+func TorrentDataFromTorrent(t *torrent.Torrent) TorrentData {
+	s := t.Stats()
+	e := ""
+	if s.Error != nil {
+		e = s.ETA.String()
+	}
+
+	f, err := t.FilePaths()
+	// When the torrent metadata hasn't been retrieved yet.
+	if err != nil {
+		f = []string{}
+	}
+
+	return TorrentData{
+		BasicTorrentData: BasicTorrentDataFromTorrent(t),
+		Magnet:           t.Magnet(),
+		Error:            e,
+		Files:            f,
+	}
+}
+
 type TorrentURI struct {
 	URI string `json:uri`
 }
