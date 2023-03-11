@@ -146,19 +146,19 @@ func DeleteTorrent(c *gin.Context) {
 }
 
 func TorrentDetails(c *gin.Context) {
-	// hash := c.Param("hash")
+	tid := c.Param("id")
 
-	// if !found {
-	// 	m := &models.APIError{
-	// 		Details: fmt.Sprintf("Torrent %q isn't known by the server.", hash),
-	// 	}
-	// 	c.JSON(http.StatusBadRequest, m)
-	// 	return
-	// }
+	t := srv.client.GetTorrent(tid)
+	if t == nil {
+		log.Printf("WebTorrent: Unknown Torrent ID %q", tid)
+		m := &models.APIError{
+			Details: fmt.Sprintf("Unknown Torrent ID %q.", tid),
+		}
+		c.JSON(http.StatusBadRequest, m)
+		return
+	}
 
-	// d, err := srv.torrentDetails(hash)
-
-	c.JSON(http.StatusOK, "")
+	c.JSON(http.StatusOK, models.TorrentDataFromTorrent(t))
 }
 
 func TorrentStatus(c *gin.Context) {
