@@ -57,9 +57,9 @@ export class TorrentDetailsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  getTorrentDetails(hash: string) {
+  getTorrentDetails(id: string) {
     this._torrentService
-      .getTorrentDetails(hash)
+      .getTorrentDetails(id)
       .subscribe((data: TorrentDetails) => {
         this.torrent = data;
         this.torrentFiles.data = [...this.torrent.Files];
