@@ -21,7 +21,6 @@ import {
   AddTorrentDialogComponent,
   DialogData,
 } from '../add-torrent-dialog/add-torrent-dialog.component';
-import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-torrent',
@@ -102,20 +101,6 @@ export class TorrentComponent implements OnInit, AfterViewInit {
     });
   }
 
-  confirmDeleteDialog(id: string) {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      disableClose: false,
-    });
-
-    dialogRef.componentInstance.confirmMessage =
-      'Removing a Torrent deletes the data. Are you sure?';
-    dialogRef.afterClosed().subscribe((result: string) => {
-      if (result) {
-        this.deleteTorrent(id);
-      }
-    });
-  }
-
   getTorrents() {
     this._torrentService.getTorrents().subscribe((data: Torrent[]) => {
       this.torrents.data = [...data];
@@ -131,26 +116,6 @@ export class TorrentComponent implements OnInit, AfterViewInit {
       if (idx === -1) {
         this.torrents.data = [...this.torrents.data, data];
       }
-    });
-  }
-
-  startTorrent(id: string) {
-    this._torrentService.startTorrent(id).subscribe(() => {
-      this.getTorrents();
-    });
-  }
-
-  pauseTorrent(id: string) {
-    this._torrentService.pauseTorrent(id).subscribe(() => {
-      this.getTorrents();
-    });
-  }
-
-  deleteTorrent(id: string) {
-    this._torrentService.deleteTorrent(id).subscribe((data: Torrent) => {
-      this.torrents.data = this.torrents.data.filter(
-        (item) => item.Hash !== data.Hash
-      );
     });
   }
 }

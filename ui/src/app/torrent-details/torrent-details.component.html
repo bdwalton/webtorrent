@@ -1,9 +1,7 @@
 <mat-toolbar>
   <span>Torrent Details</span>
-  <!-- <span class="torrent-toolbar-spacer"></span> -->
-  <!-- <button mat-mini-fab color="accent" aria-label="Add torrent" (click)="openDialog()"> -->
-  <!--   <mat-icon>add_circle</mat-icon> -->
-  <!-- </button> -->
+  <span class="torrent-toolbar-spacer"></span>
+  <app-torrent-controls [torrent]="torrent"></app-torrent-controls>
 </mat-toolbar>
 
 <mat-card>

@@ -76,35 +76,7 @@
   <ng-container matColumnDef="Controls">
     <th mat-header-cell *matHeaderCellDef>Controls</th>
     <td mat-cell *matCellDef="let torrent">
-      <div class="torrent-controls-container">
-        <span class="torrent-controls-spacer"></span>
-        <button
-          *ngIf="torrent.Status === 'Stopped'"
-          mat-mini-fab
-          color="primary"
-          aria-label="Start torrent"
-          (click)="startTorrent(torrent.ID)"
-        >
-          <mat-icon>play_arrow</mat-icon>
-        </button>
-        <button
-          *ngIf="torrent.Status !== 'Stopped'"
-          mat-mini-fab
-          color="primary"
-          aria-label="Pause torrent"
-          (click)="pauseTorrent(torrent.ID)"
-        >
-          <mat-icon>pause</mat-icon>
-        </button>
-        <button
-          mat-mini-fab
-          color="warn"
-          aria-label="Delete torrent"
-          (click)="confirmDeleteDialog(torrent.ID)"
-        >
-          <mat-icon>delete</mat-icon>
-        </button>
-      </div>
+      <app-torrent-controls [torrent]="torrent"></app-torrent-controls>
     </td>
   </ng-container>
 
