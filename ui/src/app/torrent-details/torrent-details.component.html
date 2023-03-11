@@ -25,6 +25,13 @@
       matSortDirection="asc"
       matSortDisableClear
     >
+      <ng-container matColumnDef="Position">
+        <th mat-header-cell *matHeaderCellDef>#</th>
+        <td mat-cell *matCellDef="let file; let i = index">
+          {{ i + 1 }}
+        </td>
+      </ng-container>
+
       <ng-container matColumnDef="Path">
         <th
           mat-header-cell
