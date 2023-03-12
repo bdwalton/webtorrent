@@ -19,7 +19,7 @@ type BasicTorrentData struct {
 func BasicTorrentDataFromTorrent(t *torrent.Torrent) BasicTorrentData {
 	s := t.Stats()
 
-	nf := -1
+	nf := 0
 	f, err := t.FilePaths()
 	if err == nil {
 		nf = len(f)
