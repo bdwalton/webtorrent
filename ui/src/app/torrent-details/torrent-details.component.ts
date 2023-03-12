@@ -21,6 +21,7 @@ import {
 })
 export class TorrentDetailsComponent implements OnInit, AfterViewInit {
   id: string = ''; // The unique id for the torrent
+  interval: number = 0; // The refresh interval (0 is disabled)
   torrent: TorrentDetails = new TorrentDetails();
   torrentFiles = new MatTableDataSource<TorrentFile>([]);
 
@@ -43,6 +44,10 @@ export class TorrentDetailsComponent implements OnInit, AfterViewInit {
     });
 
     this.getTorrentDetails(this.id);
+
+    this.interval = setInterval(() => {
+      this.getTorrentDetails(this.id);
+    }, 5000);
   }
 
   ngAfterViewInit() {
