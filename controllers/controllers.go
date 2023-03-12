@@ -171,7 +171,3 @@ func ShowConfig(c *gin.Context) {
 	srv.cfg.WriteTo(&s)
 	c.JSON(http.StatusOK, models.ServerData{Data: s.String()})
 }
-
-func ShutdownTorrentClient() error {
-	return srv.client.Close()
-}

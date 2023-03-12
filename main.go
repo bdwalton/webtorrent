@@ -83,7 +83,7 @@ func main() {
 	select {
 	case s := <-sig:
 		log.Printf("WebTorrent: Received signal %q. Initiating shutdown.", s)
-		controllers.ShutdownTorrentClient()
+		controllers.Shutdown()
 	}
 
 	sctx, release := context.WithTimeout(context.Background(), 10*time.Second)

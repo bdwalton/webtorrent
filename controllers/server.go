@@ -42,6 +42,24 @@ type server struct {
 	mtx    sync.Mutex
 }
 
+func newServer(cfg *ini.File) (*server, error) {
+	srv := &server{cfg: cfg}
+
+	tc, err := torrent.NewSession(makeTorrentConfig(cfg))
+	if err != nil {
+		return nil, fmt.Errorf("Error establishing torrent client: %v\n", err)
+	}
+
+	srv.client = tc
+
+	return srv, nil
+
+}
+
+func (s *server) shutdown() {
+	s.client.Close()
+}
+
 func (s *server) stopOnAdd() bool {
 	return s.cfg.Section("torrent").Key("stop_on_add").String() == "true"
 }
@@ -67,16 +85,19 @@ func makeTorrentConfig(cfg *ini.File) torrent.Config {
 // Torrent client. It also handles initializing pre-saved torrents
 // from storage.
 func Init(cfg *ini.File) error {
-	srv = &server{cfg: cfg}
-
-	tc, err := torrent.NewSession(makeTorrentConfig(cfg))
+	s, err := newServer(cfg)
 	if err != nil {
-		return fmt.Errorf("Error establishing torrent client: %v\n", err)
+		return err
 	}
 
-	srv.client = tc
+	srv = s
 
 	registerPrometheus()
 
 	return nil
+}
+
+func Shutdown() {
+	srv.shutdown()
+
 }
