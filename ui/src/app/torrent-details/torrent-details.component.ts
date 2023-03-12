@@ -1,6 +1,6 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { MatSort, Sort } from '@angular/material/sort';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { MatTableDataSource } from '@angular/material/table';
@@ -9,7 +9,10 @@ import {
   TorrentDetails,
   TorrentFile,
 } from '../torrent.service';
-import { TorrentAction } from '../torrent-controls/torrent-controls.component';
+import {
+  Action,
+  TorrentAction,
+} from '../torrent-controls/torrent-controls.component';
 
 @Component({
   selector: 'app-torrent-details',
@@ -25,6 +28,7 @@ export class TorrentDetailsComponent implements OnInit, AfterViewInit {
 
   constructor(
     private _route: ActivatedRoute,
+    private _router: Router,
     private _sanitizer: DomSanitizer,
     private _torrentService: TorrentService,
     private _liveAnnouncer: LiveAnnouncer
@@ -68,6 +72,8 @@ export class TorrentDetailsComponent implements OnInit, AfterViewInit {
   }
 
   handleControlAction(ta: TorrentAction) {
-    console.log('ID: ', ta.torrent.ID, '; Action: ', ta.action);
+    if (ta.action == Action.DELETE) {
+      this._router.navigate(['/torrent']);
+    }
   }
 }
