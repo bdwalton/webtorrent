@@ -21,6 +21,10 @@ import {
   AddTorrentDialogComponent,
   DialogData,
 } from '../add-torrent-dialog/add-torrent-dialog.component';
+import {
+  Action,
+  TorrentAction,
+} from '../torrent-controls/torrent-controls.component';
 
 @Component({
   selector: 'app-torrent',
@@ -117,5 +121,13 @@ export class TorrentComponent implements OnInit, AfterViewInit {
         this.torrents.data = [...this.torrents.data, data];
       }
     });
+  }
+
+  handleControlAction(ta: TorrentAction) {
+    if (ta.action == Action.DELETE) {
+      this.torrents.data = this.torrents.data.filter(
+        (item) => item.ID != ta.torrent.ID
+      );
+    }
   }
 }
