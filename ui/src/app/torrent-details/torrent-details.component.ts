@@ -50,6 +50,12 @@ export class TorrentDetailsComponent implements OnInit, AfterViewInit {
     }, 5000);
   }
 
+  ngOnDestroy() {
+    if (this.interval) {
+      clearInterval(this.interval);
+    }
+  }
+
   ngAfterViewInit() {
     this.torrentFiles.sort = this.sort;
   }
