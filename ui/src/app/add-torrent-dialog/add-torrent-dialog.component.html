@@ -3,9 +3,9 @@
   <p>Magnet link?</p>
   <mat-form-field appearance="fill">
     <mat-label>URI</mat-label>
-    <input matInput [(ngModel)]="data.uri" cdkFocusInitial required>
+    <input matInput [(ngModel)]="data.uri" cdkFocusInitial required />
   </mat-form-field>
-  <div mat-dialog-actions>
+  <div mat-dialog-actions align="end">
     <button mat-button (click)="onNoClick()">Cancel</button>
     <button mat-button [mat-dialog-close]="data.uri">Ok</button>
   </div>
