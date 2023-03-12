@@ -17,6 +17,7 @@
     </mat-card-title>
   </mat-card-header>
   <mat-card-content>
+    {{ torrent.Status }}
     <app-progress-component
       [prg]="torrent.TotalProgress"
     ></app-progress-component>
