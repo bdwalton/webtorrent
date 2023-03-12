@@ -128,6 +128,13 @@ export class TorrentComponent implements OnInit, AfterViewInit {
       this.torrents.data = this.torrents.data.filter(
         (item) => item.ID != ta.torrent.ID
       );
+    } else {
+      // Filter the old torrent and re-add with updated data from the
+      // server.
+      var newdata = this.torrents.data.filter(
+        (item) => item.ID != ta.torrent.ID
+      );
+      this.torrents.data = [...newdata, ta.torrent];
     }
   }
 }
