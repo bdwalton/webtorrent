@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Torrent, TorrentService } from '../torrent.service';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -10,6 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class TorrentControlsComponent {
   @Input() torrent = new Torrent();
+  @Output() torrentAction = new EventEmitter<TorrentAction>();
 
   constructor(
     public dialog: MatDialog,
@@ -17,18 +18,20 @@ export class TorrentControlsComponent {
   ) {}
 
   startTorrent(id: string) {
-    this._torrentService.startTorrent(id).subscribe(() => {});
+    this._torrentService.startTorrent(id).subscribe((torrent: Torrent) => {
+      this.torrentAction.emit(new TorrentAction(torrent, Action.STARTED));
+    });
   }
 
   pauseTorrent(id: string) {
-    this._torrentService.pauseTorrent(id).subscribe(() => {});
+    this._torrentService.pauseTorrent(id).subscribe((torrent: Torrent) => {
+      this.torrentAction.emit(new TorrentAction(torrent, Action.PAUSED));
+    });
   }
 
   deleteTorrent(id: string) {
-    this._torrentService.deleteTorrent(id).subscribe((data: Torrent) => {
-      // this.torrents.data = this.torrents.data.filter(
-      //   (item) => item.Hash !== data.Hash
-      // );
+    this._torrentService.deleteTorrent(id).subscribe((torrent: Torrent) => {
+      this.torrentAction.emit(new TorrentAction(torrent, Action.DELETE));
     });
   }
 
@@ -44,5 +47,22 @@ export class TorrentControlsComponent {
         this.deleteTorrent(id);
       }
     });
+  }
+}
+
+export const enum Action {
+  NOOP,
+  DELETE,
+  STARTED,
+  PAUSED,
+}
+
+export class TorrentAction {
+  torrent: Torrent = new Torrent();
+  action: Action = Action.NOOP;
+
+  public constructor(torrent: Torrent, action: Action) {
+    this.torrent = torrent;
+    this.action = action;
   }
 }

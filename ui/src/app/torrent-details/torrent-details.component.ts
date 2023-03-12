@@ -9,6 +9,7 @@ import {
   TorrentDetails,
   TorrentFile,
 } from '../torrent.service';
+import { TorrentAction } from '../torrent-controls/torrent-controls.component';
 
 @Component({
   selector: 'app-torrent-details',
@@ -64,5 +65,9 @@ export class TorrentDetailsComponent implements OnInit, AfterViewInit {
         this.torrent = data;
         this.torrentFiles.data = [...this.torrent.Files];
       });
+  }
+
+  handleControlAction(ta: TorrentAction) {
+    console.log('ID: ', ta.torrent.ID, '; Action: ', ta.action);
   }
 }

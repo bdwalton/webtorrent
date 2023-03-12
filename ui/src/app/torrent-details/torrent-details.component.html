@@ -1,7 +1,10 @@
 <mat-toolbar>
   <span>Torrent Details</span>
   <span class="torrent-toolbar-spacer"></span>
-  <app-torrent-controls [torrent]="torrent"></app-torrent-controls>
+  <app-torrent-controls
+    (torrentAction)="handleControlAction($event)"
+    [torrent]="torrent"
+  ></app-torrent-controls>
 </mat-toolbar>
 
 <mat-card>
