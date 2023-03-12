@@ -22,12 +22,18 @@ export class TorrentService {
 
   startTorrent(id: string) {
     var tid = new TorrentID(id);
-    return this.httpClient.put(environment.gateway + '/v1/torrent/start', tid);
+    return this.httpClient.put<Torrent>(
+      environment.gateway + '/v1/torrent/start',
+      tid
+    );
   }
 
   pauseTorrent(id: string) {
     var tid = new TorrentID(id);
-    return this.httpClient.put(environment.gateway + '/v1/torrent/pause', tid);
+    return this.httpClient.put<Torrent>(
+      environment.gateway + '/v1/torrent/pause',
+      tid
+    );
   }
 
   deleteTorrent(id: string) {
