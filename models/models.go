@@ -36,7 +36,8 @@ func BasicTorrentDataFromTorrent(t *torrent.Torrent) BasicTorrentData {
 }
 
 type TorrentFile struct {
-	Path string `json:path`
+	Path         string   `json:path`
+	FileProgress Progress `json:fileprogress`
 }
 
 type TorrentData struct {
@@ -47,15 +48,21 @@ type TorrentData struct {
 }
 
 func buildTorrentFiles(t *torrent.Torrent) []TorrentFile {
-	fp, err := t.FilePaths()
+	fs, err := t.FileStats()
 	// When the torrent metadata hasn't been retrieved yet.
 	if err != nil {
 		return []TorrentFile{}
 	}
 
-	tf := make([]TorrentFile, 0, len(fp))
-	for _, tfp := range fp {
-		tf = append(tf, TorrentFile{Path: tfp})
+	tf := make([]TorrentFile, 0, len(fs))
+	for _, tfs := range fs {
+		tf = append(tf,
+			TorrentFile{Path: tfs.Path,
+				FileProgress: Progress{
+					BytesDown:  tfs.BytesDownloaded,
+					BytesTotal: tfs.BytesTotal,
+				},
+			})
 	}
 
 	return tf
