@@ -25,7 +25,7 @@ export class TorrentDetailsComponent implements OnInit, AfterViewInit {
   torrent: TorrentDetails = new TorrentDetails();
   torrentFiles = new MatTableDataSource<TorrentFile>([]);
 
-  displayedColumns: string[] = ['Position', 'Path'];
+  displayedColumns: string[] = ['Position', 'Path', 'Progress'];
 
   constructor(
     private _route: ActivatedRoute,

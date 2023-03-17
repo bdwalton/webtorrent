@@ -68,6 +68,7 @@ export class Progress {
 
 export class TorrentFile {
   Path: string = '';
+  FileProgress: Progress = new Progress();
 }
 
 export class Torrent {
