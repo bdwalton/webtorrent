@@ -52,6 +52,8 @@ func AddTorrent(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, m)
 	}
 
+	go srv.watchTorrent(t)
+
 	c.JSON(http.StatusOK, models.BasicTorrentDataFromTorrent(t))
 }
 
@@ -84,6 +86,8 @@ func StartTorrent(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, m)
 		return
 	}
+
+	go srv.watchTorrent(t)
 
 	c.JSON(http.StatusOK, models.BasicTorrentDataFromTorrent(t))
 }

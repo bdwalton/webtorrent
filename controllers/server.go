@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"path/filepath"
 	"sync"
 
@@ -40,10 +41,15 @@ type server struct {
 	client *torrent.Session
 	cfg    *ini.File
 	mtx    sync.Mutex
+	doneC  chan struct{}
+	wg     sync.WaitGroup // used to ensure all watchTorrent goroutines shut down
 }
 
 func newServer(cfg *ini.File) (*server, error) {
-	srv := &server{cfg: cfg}
+	srv := &server{
+		cfg:   cfg,
+		doneC: make(chan struct{}),
+	}
 
 	tc, err := torrent.NewSession(makeTorrentConfig(cfg))
 	if err != nil {
@@ -56,8 +62,40 @@ func newServer(cfg *ini.File) (*server, error) {
 
 }
 
+// watchTorrents should be called at server startup. It will fire up
+// monitors to watch existing, running torrents for important state
+// changes.
+func (s *server) watchTorrents() {
+	for _, t := range s.client.ListTorrents() {
+		if t.Stats().Status.String() != "Stopped" {
+			go s.watchTorrent(t)
+		}
+	}
+}
+
+func (s *server) watchTorrent(t *torrent.Torrent) {
+	s.wg.Add(1)
+
+	log.Printf("WebTorrent: watchTorrent(%s) running...", t.ID())
+
+	select {
+	case <-s.doneC:
+		log.Printf("WebTorrent: watchTorrent(%s) shutting down.", t.ID())
+	case <-t.NotifyComplete():
+		log.Printf("WebTorrent: watchTorrent(%s) is done.", t.ID())
+	case <-t.NotifyStop():
+		log.Printf("WebTorrent: watchTorrent(%s) is stopped.", t.ID())
+	case <-t.NotifyClose():
+		log.Printf("WebTorrent: watchTorrent(%s) was closed (dropped, data removed).", t.ID())
+	}
+
+	s.wg.Done()
+}
+
 func (s *server) shutdown() {
 	s.client.Close()
+	close(s.doneC)
+	s.wg.Wait()
 }
 
 func (s *server) stopOnAdd() bool {
@@ -91,8 +129,9 @@ func Init(cfg *ini.File) error {
 	}
 
 	srv = s
-
 	registerPrometheus()
+
+	srv.watchTorrents()
 
 	return nil
 }
