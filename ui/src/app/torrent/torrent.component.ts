@@ -7,7 +7,6 @@ import {
   ViewChild,
 } from '@angular/core';
 import { MatSort, Sort } from '@angular/material/sort';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { filter } from 'rxjs/operators';
 import { TorrentService, Torrent } from '../torrent.service';
@@ -46,7 +45,6 @@ export class TorrentComponent implements OnInit, AfterViewInit {
   constructor(
     public dialog: MatDialog,
     private _torrentService: TorrentService,
-    private _snackBar: MatSnackBar,
     private _liveAnnouncer: LiveAnnouncer
   ) {}
 
@@ -91,17 +89,7 @@ export class TorrentComponent implements OnInit, AfterViewInit {
         return;
       }
 
-      if (result.startsWith('magnet:')) {
-        this.addTorrent(result);
-      } else {
-        this._snackBar.open(
-          'Invalid Magnet URI. Must start with "magnet:"',
-          'OK',
-          {
-            duration: 5000,
-          }
-        );
-      }
+      this.addTorrent(result);
     });
   }
 

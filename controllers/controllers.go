@@ -30,13 +30,6 @@ func AddTorrent(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, m)
 	}
 
-	if !strings.HasPrefix(tu.URI, "magnet:") {
-		m := &models.APIError{
-			Details: "Non-magnet URI supplied. We only accept magnet URI.",
-		}
-		c.JSON(http.StatusBadRequest, m)
-	}
-
 	ato := &torrent.AddTorrentOptions{
 		Stopped:           srv.stopOnAdd(),
 		StopAfterDownload: srv.stopAfterDownload(),
