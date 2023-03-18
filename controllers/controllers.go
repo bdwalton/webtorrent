@@ -159,8 +159,7 @@ func TorrentDetails(c *gin.Context) {
 }
 
 func TorrentStatus(c *gin.Context) {
-	s := strings.Builder{}
-	c.JSON(http.StatusOK, models.ServerData{Data: s.String()})
+	c.JSON(http.StatusOK, srv.client.Stats())
 }
 
 func ShowConfig(c *gin.Context) {

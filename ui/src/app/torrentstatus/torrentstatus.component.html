@@ -3,6 +3,11 @@
     <mat-card-title>Torrent Client Status</mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <pre>{{ status }}</pre>
+    <table>
+      <tr *ngFor="let item of displayItems">
+        <th title="{{ getDescription(item) }}">{{ getTitle(item) }}</th>
+        <td>{{ getItem(item) }}</td>
+      </tr>
+    </table>
   </mat-card-content>
 </mat-card>

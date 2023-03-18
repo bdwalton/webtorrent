@@ -49,7 +49,7 @@ export class TorrentService {
   }
 
   getStatus() {
-    return this.httpClient.get<ServerData>(
+    return this.httpClient.get<ServerStats>(
       environment.gateway + '/v1/torrentstatus'
     );
   }
@@ -107,4 +107,71 @@ export class TorrentID {
 
 export class ServerData {
   Data: string = '';
+}
+
+export class ServerStats {
+  // Time elapsed after creation of the Session object.
+  Uptime: number = 0; // A time.Duration in Golang
+
+  // Number of torrents in Session.
+  Torrents: number = 0;
+  // Total number of connected peers.
+  Peers: number = 0;
+  // Number of available ports for new torrents.
+  PortsAvailable: number = 0;
+
+  // Number of rules in blocklist.
+  BlockListRules: number = 0;
+  // Time elapsed after the last successful update of blocklist.
+  BlockListRecency: number = 0; // A time.Duration in Golang
+
+  // Number of objects in piece read cache.
+  // Each object is a block whose size is defined in Config.ReadCacheBlockSize.
+  ReadCacheObjects: number = 0;
+  // Current size of read cache.
+  ReadCacheSize: number = 0;
+  // Hit ratio of read cache.
+  ReadCacheUtilization: number = 0;
+
+  // Number of reads per second from disk.
+  ReadsPerSecond: number = 0;
+  // Number of active read requests from disk.
+  ReadsActive: number = 0;
+  // Number of pending read requests from disk.
+  ReadsPending: number = 0;
+
+  // Number of objects in piece write cache.
+  // Objects are complete pieces.
+  // Piece size differs among torrents.
+  WriteCacheObjects: number = 0;
+  // Current size of write cache.
+  WriteCacheSize: number = 0;
+  // Number of pending torrents that is waiting for write cache.
+  WriteCachePendingKeys: number = 0;
+
+  // Number of writes per second to disk.
+  // Each write is a complete piece.
+  WritesPerSecond: number = 0;
+  // Number of active write requests to disk.
+  WritesActive: number = 0;
+  // Number of pending write requests to disk.
+  WritesPending: number = 0;
+
+  // Download speed from peers in bytes/s.
+  SpeedDownload: number = 0;
+  // Upload speed to peers in bytes/s.
+  SpeedUpload: number = 0;
+  // Read speed from disk in bytes/s.
+  SpeedRead: number = 0;
+  // Write speed to disk in bytes/s.
+  SpeedWrite: number = 0;
+
+  // Number of bytes downloaded from peers.
+  BytesDownloaded: number = 0;
+  // Number of bytes uploaded to peers.
+  BytesUploaded: number = 0;
+  // Number of bytes read from disk.
+  BytesRead: number = 0;
+  // Number of bytes written to disk.
+  BytesWritten: number = 0;
 }
