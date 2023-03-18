@@ -60,6 +60,18 @@ export class TorrentComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.torrents.sort = this.sort;
+    this.torrents.sortingDataAccessor = (
+      row: Torrent,
+      columnName: string
+    ): string | number => {
+      if (columnName == 'Progress') {
+        return (
+          (row.TotalProgress.BytesDown / row.TotalProgress.BytesTotal) * 100
+        );
+      }
+
+      return row[columnName as keyof Torrent].toString();
+    };
   }
 
   /** Announce the change in sort state for assistive technology. */
