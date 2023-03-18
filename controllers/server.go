@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"fmt"
+	"io/fs"
 	"log"
 	"path/filepath"
+	"strconv"
 	"sync"
 
 	"github.com/cenkalti/rain/torrent"
@@ -115,6 +117,14 @@ func makeTorrentConfig(cfg *ini.File) torrent.Config {
 	tcfg.RPCEnabled = false
 	tcfg.DataDir = filepath.Join(cfg.Section("torrent").Key("basedir").String(), "torrents")
 	tcfg.Database = filepath.Join(cfg.Section("torrent").Key("basedir").String(), "metadata")
+
+	if cfg.Section("torrent").HasKey("file_permissions") {
+		if fp, err := strconv.ParseUint(cfg.Section("torrent").Key("file_permissions").String(), 8, 32); err == nil {
+			tcfg.FilePermissions = fs.FileMode(uint32(fp))
+		} else {
+			log.Println("Couldn't convert torrent.file_permissions %q: %v", fp, err)
+		}
+	}
 
 	return tcfg
 }
