@@ -83,3 +83,5 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	lukechampine.com/blake3 v1.1.6 // indirect
 )
+
+replace github.com/cenkalti/rain => /storage/home/bdwalton/working_code/go/src/github.com/bdwalton/rain
