@@ -159,7 +159,7 @@ func TorrentDetails(c *gin.Context) {
 }
 
 func TorrentStatus(c *gin.Context) {
-	c.JSON(http.StatusOK, srv.client.Stats())
+	c.JSON(http.StatusOK, models.WrapSessionStats(srv.client.Stats()))
 }
 
 func ShowConfig(c *gin.Context) {
