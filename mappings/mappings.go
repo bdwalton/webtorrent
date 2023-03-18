@@ -12,7 +12,8 @@ import (
 
 var router *gin.Engine
 
-func Init() {
+func Init(ginMode string) {
+	gin.SetMode(ginMode)
 	router = gin.Default()
 
 	// For now, allow all origins. We can tighten this up later.

@@ -43,6 +43,14 @@ func validateConfig(cfg *ini.File) error {
 	return nil
 }
 
+func ginMode(cfg *ini.File) string {
+	if cfg.Section("server").HasKey("gin_mode") {
+		return cfg.Section("server").Key("gin_mode").String()
+	}
+
+	return "release"
+}
+
 func main() {
 	flag.Parse()
 
@@ -64,7 +72,7 @@ func main() {
 		log.Fatalf("TorrenServer: %v")
 	}
 
-	mappings.Init()
+	mappings.Init(ginMode(cfg))
 
 	srv := &http.Server{
 		Addr:    ":" + cfg.Section("server").Key("port").String(),
