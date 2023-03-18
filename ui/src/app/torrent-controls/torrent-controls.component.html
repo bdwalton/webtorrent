@@ -10,7 +10,7 @@
     <mat-icon>play_arrow</mat-icon>
   </button>
   <button
-    *ngIf="torrent.Status !== 'Stopped'"
+    *ngIf="torrent.Status !== 'Stopped' && torrent.Status !== 'Stopping'"
     mat-mini-fab
     color="primary"
     aria-label="Pause torrent"
