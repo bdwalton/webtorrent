@@ -136,7 +136,7 @@ func DeleteTorrent(c *gin.Context) {
 	}
 
 	if err := srv.client.RemoveTorrent(tid); err != nil {
-		log.Printf("WebTorrent: Failed to remote Torrent %q: %v", tid, err)
+		log.Printf("WebTorrent: Failed to remove Torrent %q: %v", tid, err)
 		m := &models.APIError{
 			Details: fmt.Sprintf("Failed to remove Torrent ID %q.", tid),
 		}
