@@ -46,7 +46,8 @@ type server struct {
 	cfg    *ini.File
 	mtx    sync.Mutex
 	doneC  chan struct{}
-	wg     sync.WaitGroup // used to ensure all watchTorrent goroutines shut down
+	// used to ensure all watchTorrent and persistTorrent goroutines shut down
+	wg sync.WaitGroup
 }
 
 func newServer(cfg *ini.File) (*server, error) {
@@ -72,14 +73,16 @@ func newServer(cfg *ini.File) (*server, error) {
 func (s *server) watchTorrents() {
 	for _, t := range s.client.ListTorrents() {
 		if t.Stats().Status.String() != "Stopped" {
-			s.wg.Add(1)
-			go s.watchTorrent(t)
+			go func(wg *sync.WaitGroup) {
+				wg.Add(1)
+				s.watchTorrent(t)
+				wg.Done()
+			}(&s.wg)
 		}
 	}
 }
 
 func (s *server) watchTorrent(t *torrent.Torrent) {
-
 	log.Printf("WebTorrent: watchTorrent(%s) running...", t.ID())
 
 	select {
@@ -87,20 +90,19 @@ func (s *server) watchTorrent(t *torrent.Torrent) {
 		log.Printf("WebTorrent: watchTorrent(%s) shutting down.", t.ID())
 	case <-t.NotifyComplete():
 		log.Printf("WebTorrent: watchTorrent(%s) is done.", t.ID())
-		s.wg.Add(1)
-		go s.persistTorrent(t)
+		go func(wg *sync.WaitGroup) {
+			wg.Add(1)
+			s.persistTorrent(t)
+			wg.Done()
+		}(&s.wg)
 	case <-t.NotifyStop():
 		log.Printf("WebTorrent: watchTorrent(%s) is stopped.", t.ID())
 	case <-t.NotifyClose():
 		log.Printf("WebTorrent: watchTorrent(%s) was closed (dropped, data removed).", t.ID())
 	}
-
-	s.wg.Done()
 }
 
 func (s *server) persistTorrent(t *torrent.Torrent) {
-	defer s.wg.Done()
-
 	if files, err := t.FilePaths(); err == nil {
 		tpd := s.torrentBaseDir()
 		fdd := s.finalDataDir()
@@ -108,6 +110,7 @@ func (s *server) persistTorrent(t *torrent.Torrent) {
 			tpd = filepath.Join(tpd, t.ID())
 		}
 
+		log.Printf("WebTorrent: persistTorrent(%s) storing data.", t.ID())
 		for _, f := range files {
 			src := filepath.Join(tpd, f)
 			dst := filepath.Join(fdd, f)
@@ -121,8 +124,6 @@ func (s *server) persistTorrent(t *torrent.Torrent) {
 				return
 			}
 		}
-
-		log.Printf("WebTorrent: persistTorrent(%s) successfully persisted data.", t.ID())
 	} else {
 		log.Printf("WebTorrent: persistTorrent(%s) error listing files: %v", t.ID(), err)
 	}

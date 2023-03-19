@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"sync"
 
 	"github.com/bdwalton/webtorrent/models"
 	"github.com/cenkalti/rain/torrent"
@@ -45,7 +46,11 @@ func AddTorrent(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, m)
 	}
 
-	go srv.watchTorrent(t)
+	go func(wg *sync.WaitGroup) {
+		wg.Add(1)
+		srv.watchTorrent(t)
+		wg.Done()
+	}(&srv.wg)
 
 	c.JSON(http.StatusOK, models.BasicTorrentDataFromTorrent(t))
 }
