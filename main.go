@@ -40,6 +40,15 @@ func validateConfig(cfg *ini.File) error {
 		return fmt.Errorf("Invalid torrent.basedir setting: %v", err)
 	}
 
+	fdd := cfg.Section("torrent").Key("final_datadir").String()
+	if fdd == "" || fdd == bd {
+		return fmt.Errorf("Must set torrent.final_datadir to something other than torrent.basedir")
+	} else {
+		if err := os.MkdirAll(fdd, 0755); err != nil && !errors.Is(err, os.ErrExist) {
+			return fmt.Errorf("Invalid torrent.final_datadir setting: %v", err)
+		}
+	}
+
 	return nil
 }
 
