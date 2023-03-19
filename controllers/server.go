@@ -53,7 +53,7 @@ func newServer(cfg *ini.File) (*server, error) {
 		doneC: make(chan struct{}),
 	}
 
-	tc, err := torrent.NewSession(makeTorrentConfig(cfg))
+	tc, err := torrent.NewSession(makeTorrentConfig(srv))
 	if err != nil {
 		return nil, fmt.Errorf("Error establishing torrent client: %v\n", err)
 	}
@@ -112,19 +112,33 @@ func (s *server) stopAfterMetadata() bool {
 	return s.cfg.Section("torrent").Key("stop_after_metadata").String() == "true"
 }
 
-func makeTorrentConfig(cfg *ini.File) torrent.Config {
-	tcfg := torrent.DefaultConfig
-	tcfg.RPCEnabled = false
-	tcfg.DataDir = filepath.Join(cfg.Section("torrent").Key("basedir").String(), "torrents")
-	tcfg.Database = filepath.Join(cfg.Section("torrent").Key("basedir").String(), "metadata")
+func (s *server) torrentBaseDir() string {
+	return filepath.Join(s.cfg.Section("torrent").Key("basedir").String(), "torrents")
+}
 
-	if cfg.Section("torrent").HasKey("file_permissions") {
-		if fp, err := strconv.ParseUint(cfg.Section("torrent").Key("file_permissions").String(), 8, 32); err == nil {
-			tcfg.FilePermissions = fs.FileMode(uint32(fp))
+func (s *server) torrentMetadatadir() string {
+	return filepath.Join(s.cfg.Section("torrent").Key("basedir").String(), "metadata")
+}
+
+
+func (s *server) filePermissions() fs.FileMode {
+	if s.cfg.Section("torrent").HasKey("file_permissions") {
+		if fp, err := strconv.ParseUint(s.cfg.Section("torrent").Key("file_permissions").String(), 8, 32); err == nil {
+			return fs.FileMode(uint32(fp))
 		} else {
 			log.Println("Couldn't convert torrent.file_permissions %q: %v", fp, err)
 		}
 	}
+
+	return fs.FileMode(uint32(0o755))
+}
+
+func makeTorrentConfig(s *server) torrent.Config {
+	tcfg := torrent.DefaultConfig
+	tcfg.RPCEnabled = false
+	tcfg.DataDir = s.torrentBaseDir()
+	tcfg.Database = s.torrentMetadatadir()
+	tcfg.FilePermissions = s.filePermissions()
 
 	return tcfg
 }
