@@ -163,7 +163,7 @@ func TorrentDetails(c *gin.Context) {
 	c.JSON(http.StatusOK, models.TorrentDataFromTorrent(t))
 }
 
-func TorrentStatus(c *gin.Context) {
+func TorrentClientStatus(c *gin.Context) {
 	c.JSON(http.StatusOK, models.WrapSessionStats(srv.client.Stats()))
 }
 

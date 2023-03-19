@@ -47,7 +47,7 @@ func Init(ginMode string) {
 
 		// Server health diagnostic calls
 		v1.GET("/showconfig", controllers.ShowConfig)
-		v1.GET("/torrentstatus", controllers.TorrentStatus)
+		v1.GET("/torrentstatus", controllers.TorrentClientStatus)
 	}
 }
 
