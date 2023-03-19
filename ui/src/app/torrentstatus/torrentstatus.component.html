@@ -6,7 +6,21 @@
     <table>
       <tr *ngFor="let item of displayItems">
         <th title="{{ getDescription(item) }}">{{ getTitle(item) }}</th>
-        <td>{{ getItem(item) }}</td>
+        <td>
+          <div
+            *ngIf="
+              item.includes('Bytes') ||
+                item.includes('Speed') ||
+                item.includes('CacheSize');
+              else elseblock
+            "
+          >
+            {{ getItem(item) | fileSizeFormatter }}
+          </div>
+          <ng-template #elseblock>
+            {{ getItem(item) }}
+          </ng-template>
+        </td>
       </tr>
     </table>
   </mat-card-content>
