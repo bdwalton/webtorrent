@@ -120,6 +120,15 @@ func (s *server) torrentMetadatadir() string {
 	return filepath.Join(s.cfg.Section("torrent").Key("basedir").String(), "metadata")
 }
 
+// datadirIncludesTorrentID returns a boolean value representing the
+// config key and defaults to true
+func (s *server) datadirIncludesTorrentID() bool {
+	if s.cfg.Section("torrent").HasKey("datadir_includes_torrentid") {
+		return s.cfg.Section("torrent").Key("datadir_includes_torrentid").String() == "true"
+	}
+
+	return true
+}
 
 func (s *server) filePermissions() fs.FileMode {
 	if s.cfg.Section("torrent").HasKey("file_permissions") {
@@ -137,6 +146,7 @@ func makeTorrentConfig(s *server) torrent.Config {
 	tcfg := torrent.DefaultConfig
 	tcfg.RPCEnabled = false
 	tcfg.DataDir = s.torrentBaseDir()
+	tcfg.DataDirIncludesTorrentID = s.datadirIncludesTorrentID()
 	tcfg.Database = s.torrentMetadatadir()
 	tcfg.FilePermissions = s.filePermissions()
 
