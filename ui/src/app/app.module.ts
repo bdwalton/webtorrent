@@ -16,6 +16,7 @@ import { AddTorrentDialogComponent } from './add-torrent-dialog/add-torrent-dial
 import { HttpErrorsInterceptor } from './http-errors.interceptor';
 
 import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -55,6 +56,7 @@ import { TorrentControlsComponent } from './torrent-controls/torrent-controls.co
     HttpClientModule,
     BrowserAnimationsModule,
     MatButtonModule,
+    MatButtonToggleModule,
     MatCardModule,
     MatDialogModule,
     MatFormFieldModule,

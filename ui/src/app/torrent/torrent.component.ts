@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { filter } from 'rxjs/operators';
 import { TorrentService, Torrent } from '../torrent.service';
 import { FileSizeFormatterPipe } from '../file-size-formatter.pipe';
@@ -31,6 +32,7 @@ import {
   styleUrls: ['./torrent.component.scss'],
 })
 export class TorrentComponent implements OnInit, AfterViewInit {
+  autoRefresh: boolean = true;
   interval: number = 0;
   torrents = new MatTableDataSource<Torrent>([]);
 
@@ -44,6 +46,7 @@ export class TorrentComponent implements OnInit, AfterViewInit {
 
   constructor(
     public dialog: MatDialog,
+    private _snackbar: MatSnackBar,
     private _torrentService: TorrentService,
     private _liveAnnouncer: LiveAnnouncer
   ) {}
@@ -87,6 +90,21 @@ export class TorrentComponent implements OnInit, AfterViewInit {
   triggerDialog(event: KeyboardEvent) {
     event.preventDefault();
     this.addTorrentDialog();
+  }
+
+  toggleRefresh(): void {
+    this.autoRefresh = !this.autoRefresh;
+    if (this.autoRefresh) {
+      this.interval = setInterval(() => {
+        this.getTorrents();
+      }, 5000);
+      this._snackbar.open('Refresh enabled every 5s.', 'Ok', {
+        duration: 5000,
+      });
+    } else {
+      clearInterval(this.interval);
+      this._snackbar.open('Refresh disabled.', 'Ok', { duration: 5000 });
+    }
   }
 
   addTorrentDialog(): void {

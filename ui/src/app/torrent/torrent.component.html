@@ -9,6 +9,15 @@
   >
     <mat-icon>add_circle</mat-icon>
   </button>
+  <mat-button-toggle
+    checked="true"
+    [aria-label]="
+      autoRefresh ? 'Disable automatic refresh' : 'Enable automatic refresh'
+    "
+    (click)="toggleRefresh()"
+  >
+    <mat-icon>refresh</mat-icon>
+  </mat-button-toggle>
 </mat-toolbar>
 
 <table
