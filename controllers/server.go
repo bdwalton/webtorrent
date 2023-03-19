@@ -1,9 +1,11 @@
 package controllers
 
 import (
+	"errors"
 	"fmt"
 	"io/fs"
 	"log"
+	"os"
 	"path/filepath"
 	"strconv"
 	"sync"
@@ -85,6 +87,7 @@ func (s *server) watchTorrent(t *torrent.Torrent) {
 		log.Printf("WebTorrent: watchTorrent(%s) shutting down.", t.ID())
 	case <-t.NotifyComplete():
 		log.Printf("WebTorrent: watchTorrent(%s) is done.", t.ID())
+		go s.persistTorrent(t)
 	case <-t.NotifyStop():
 		log.Printf("WebTorrent: watchTorrent(%s) is stopped.", t.ID())
 	case <-t.NotifyClose():
@@ -92,6 +95,37 @@ func (s *server) watchTorrent(t *torrent.Torrent) {
 	}
 
 	s.wg.Done()
+}
+
+func (s *server) persistTorrent(t *torrent.Torrent) {
+	s.wg.Add(1)
+	defer s.wg.Done()
+
+	if files, err := t.FilePaths(); err == nil {
+		tpd := s.torrentBaseDir()
+		fdd := s.finalDataDir()
+		if s.datadirIncludesTorrentID() {
+			tpd = filepath.Join(tpd, t.ID())
+		}
+
+		for _, f := range files {
+			src := filepath.Join(tpd, f)
+			dst := filepath.Join(fdd, f)
+			if err := os.MkdirAll(filepath.Dir(dst), s.filePermissions()); err != nil && !errors.Is(err, os.ErrExist) {
+				log.Printf("WebTorrent: persistTorrent(%s) mkdirall error: %v", t.ID(), err)
+				return
+			}
+
+			if err := os.Link(src, dst); err != nil {
+				log.Printf("WebTorrent: persistTorrent(%s) link error: %v", t.ID(), err)
+				return
+			}
+		}
+
+		log.Printf("WebTorrent: persistTorrent(%s) successfully persisted data.", t.ID())
+	} else {
+		log.Printf("WebTorrent: persistTorrent(%s) error listing files: %v", t.ID(), err)
+	}
 }
 
 func (s *server) shutdown() {
@@ -114,6 +148,10 @@ func (s *server) stopAfterMetadata() bool {
 
 func (s *server) torrentBaseDir() string {
 	return filepath.Join(s.cfg.Section("torrent").Key("basedir").String(), "torrents")
+}
+
+func (s *server) finalDataDir() string {
+	return s.cfg.Section("torrent").Key("final_datadir").String()
 }
 
 func (s *server) torrentMetadatadir() string {
