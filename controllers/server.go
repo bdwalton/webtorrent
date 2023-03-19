@@ -72,13 +72,13 @@ func newServer(cfg *ini.File) (*server, error) {
 func (s *server) watchTorrents() {
 	for _, t := range s.client.ListTorrents() {
 		if t.Stats().Status.String() != "Stopped" {
+			s.wg.Add(1)
 			go s.watchTorrent(t)
 		}
 	}
 }
 
 func (s *server) watchTorrent(t *torrent.Torrent) {
-	s.wg.Add(1)
 
 	log.Printf("WebTorrent: watchTorrent(%s) running...", t.ID())
 
@@ -87,6 +87,7 @@ func (s *server) watchTorrent(t *torrent.Torrent) {
 		log.Printf("WebTorrent: watchTorrent(%s) shutting down.", t.ID())
 	case <-t.NotifyComplete():
 		log.Printf("WebTorrent: watchTorrent(%s) is done.", t.ID())
+		s.wg.Add(1)
 		go s.persistTorrent(t)
 	case <-t.NotifyStop():
 		log.Printf("WebTorrent: watchTorrent(%s) is stopped.", t.ID())
@@ -98,7 +99,6 @@ func (s *server) watchTorrent(t *torrent.Torrent) {
 }
 
 func (s *server) persistTorrent(t *torrent.Torrent) {
-	s.wg.Add(1)
 	defer s.wg.Done()
 
 	if files, err := t.FilePaths(); err == nil {
