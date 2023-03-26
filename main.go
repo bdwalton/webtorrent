@@ -93,6 +93,7 @@ func main() {
 	}
 
 	go func() {
+		log.Println("WebTorrent: Serving on port", cfg.Section("server").Key("port").String())
 		if err := srv.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("WebTorrent: Server error: %v\n", err)
 		}
