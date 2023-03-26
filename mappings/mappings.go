@@ -1,6 +1,10 @@
 package mappings
 
 import (
+	"errors"
+	"io/fs"
+	"net/http"
+	"os"
 	"path"
 	"path/filepath"
 
@@ -12,23 +16,31 @@ import (
 
 var router *gin.Engine
 
-func Init(ginMode string) {
+func Init(ginMode string, basePath string, staticFiles fs.FS) {
 	gin.SetMode(ginMode)
 	router = gin.Default()
 
 	// For now, allow all origins. We can tighten this up later.
 	router.Use(cors.Default())
 
+	defPage := filepath.Join(basePath, "webtorrent.html")
+	hfs := http.FS(staticFiles)
+	router.StaticFileFS("/", defPage, hfs)
+	router.StaticFileFS("/webtorrent.html", defPage, hfs)
+
 	// Maybe provide an embed.FS for this later, but for now, we
 	// can serve them from the filesystem.
 	router.NoRoute(func(c *gin.Context) {
-		dir, file := path.Split(c.Request.RequestURI)
-		ext := filepath.Ext(file)
-		if file == "" || ext == "" {
-			c.File("./ui/dist/ui/index.html")
-		} else {
-			c.File("./ui/dist/ui/" + path.Join(dir, file))
+		page := basePath + path.Join(c.Request.RequestURI)
+		// If the user force refreshes their browser while one
+		// of the virtual angular SPA endpoints is in the
+		// location bar, the browser will request that path
+		// from us. We cover that up by defaulting back to
+		// serving the underlying angular html page.
+		if _, err := os.Stat(page); errors.Is(err, os.ErrNotExist) {
+			c.FileFromFS(defPage, hfs)
 		}
+		c.FileFromFS(page, hfs)
 	})
 
 	router.GET("/metrics", gin.WrapH(promhttp.Handler()))

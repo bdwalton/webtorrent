@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"embed"
 	"errors"
 	"flag"
 	"fmt"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -19,6 +21,8 @@ import (
 
 var (
 	configFile = flag.String("config", "", "Path to the config file. Required.")
+	//go:embed ui/dist/ui
+	angularFS embed.FS
 )
 
 // validateConfig expects a valid ini.File object and ensure that all
@@ -81,7 +85,7 @@ func main() {
 		log.Fatalf("TorrenServer: %v", err)
 	}
 
-	mappings.Init(ginMode(cfg))
+	mappings.Init(ginMode(cfg), "./ui/dist/ui", fs.FS(angularFS))
 
 	srv := &http.Server{
 		Addr:    ":" + cfg.Section("server").Key("port").String(),
