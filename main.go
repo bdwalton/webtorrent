@@ -78,7 +78,7 @@ func main() {
 
 	// This should initialize the torrent client with appropriate config.
 	if err := controllers.Init(cfg); err != nil {
-		log.Fatalf("TorrenServer: %v")
+		log.Fatalf("TorrenServer: %v", err)
 	}
 
 	mappings.Init(ginMode(cfg))
