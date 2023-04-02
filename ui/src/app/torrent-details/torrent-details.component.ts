@@ -1,6 +1,7 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort, Sort } from '@angular/material/sort';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { MatTableDataSource } from '@angular/material/table';
@@ -31,6 +32,7 @@ export class TorrentDetailsComponent implements OnInit, AfterViewInit {
     private _route: ActivatedRoute,
     private _router: Router,
     private _sanitizer: DomSanitizer,
+    private _snackbar: MatSnackBar,
     private _torrentService: TorrentService,
     private _liveAnnouncer: LiveAnnouncer
   ) {}
@@ -84,12 +86,26 @@ export class TorrentDetailsComponent implements OnInit, AfterViewInit {
   }
 
   getTorrentDetails(id: string) {
-    this._torrentService
-      .getTorrentDetails(id)
-      .subscribe((data: TorrentDetails) => {
+    this._torrentService.getTorrentDetails(id).subscribe(
+      (data: TorrentDetails) => {
         this.torrent = data;
+        if (
+          this.torrent.Status !== 'Downloading' &&
+          this.torrent.Status !== 'Seeding'
+        ) {
+          this._snackbar.open(
+            'Torrent not running. Details unavailable.',
+            'Ok',
+            { duration: 5000 }
+          );
+          this._router.navigate(['/torrent']);
+        }
         this.torrentFiles.data = [...this.torrent.Files];
-      });
+      },
+      (err) => {
+        this._router.navigate(['/torrent']);
+      }
+    );
   }
 
   handleControlAction(ta: TorrentAction) {
