@@ -39,9 +39,18 @@
       Name
     </th>
     <td mat-cell *matCellDef="let torrent">
-      <a routerLink="/torrentdetails/{{ torrent.ID }}">
+      <a
+        *ngIf="
+          torrent.Status === 'Downloading' || torrent.Status === 'Seeding';
+          else inactiveTorrent
+        "
+        routerLink="/torrentdetails/{{ torrent.ID }}"
+      >
         {{ torrent.Name }}
       </a>
+      <ng-template #inactiveTorrent>
+        {{ torrent.Name }}
+      </ng-template>
     </td>
   </ng-container>
 
