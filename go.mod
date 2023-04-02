@@ -3,7 +3,7 @@ module github.com/bdwalton/webtorrent
 go 1.19
 
 require (
-	github.com/cenkalti/rain v1.12.6-0.20230313193112-6028d062e692
+	github.com/cenkalti/rain v1.12.6-0.20230402141126-dae291c276f9
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.0
 	github.com/prometheus/client_golang v1.14.0
@@ -83,5 +83,3 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	lukechampine.com/blake3 v1.1.6 // indirect
 )
-
-replace github.com/cenkalti/rain => /storage/home/bdwalton/working_code/go/src/github.com/bdwalton/rain
