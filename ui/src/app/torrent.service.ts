@@ -57,12 +57,6 @@ export class TorrentService {
       environment.gateway + 'v1/torrentstatus',
     );
   }
-
-  getConfig() {
-    return this.httpClient.get<ServerData>(
-      environment.gateway + 'v1/showconfig',
-    );
-  }
 }
 
 export class Progress {
@@ -107,10 +101,6 @@ export class TorrentID {
     this.ID = id;
   }
   ID: string = '';
-}
-
-export class ServerData {
-  Data: string = '';
 }
 
 export class ServerStats {

@@ -11,7 +11,6 @@ import { TorrentStatusComponent } from './torrentstatus/torrentstatus.component'
 import { FileSizeFormatterPipe } from './file-size-formatter.pipe';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CacheRouteReuseStrategy } from './cache-route-reuse.strategy';
-import { ServerConfigComponent } from './serverconfig/serverconfig.component';
 import { AddTorrentDialogComponent } from './add-torrent-dialog/add-torrent-dialog.component';
 import { HttpErrorsInterceptor } from './http-errors.interceptor';
 
@@ -41,7 +40,6 @@ import { TorrentControlsComponent } from './torrent-controls/torrent-controls.co
     TorrentComponent,
     TorrentStatusComponent,
     FileSizeFormatterPipe,
-    ServerConfigComponent,
     AddTorrentDialogComponent,
     TorrentDetailsComponent,
     PageNotFoundComponent,
