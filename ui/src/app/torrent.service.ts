@@ -9,54 +9,54 @@ export class TorrentService {
   constructor(private httpClient: HttpClient) {}
 
   getTorrents() {
-    return this.httpClient.get<Torrent[]>(environment.gateway + '/v1/torrent');
+    return this.httpClient.get<Torrent[]>(environment.gateway + 'v1/torrent');
   }
 
   addTorrent(uri: string) {
     var turi = new TorrentURI(uri);
     return this.httpClient.post<Torrent>(
-      environment.gateway + '/v1/torrent',
-      turi
+      environment.gateway + 'v1/torrent',
+      turi,
     );
   }
 
   startTorrent(id: string) {
     var tid = new TorrentID(id);
     return this.httpClient.put<Torrent>(
-      environment.gateway + '/v1/torrent/start',
-      tid
+      environment.gateway + 'v1/torrent/start',
+      tid,
     );
   }
 
   pauseTorrent(id: string) {
     var tid = new TorrentID(id);
     return this.httpClient.put<Torrent>(
-      environment.gateway + '/v1/torrent/pause',
-      tid
+      environment.gateway + 'v1/torrent/pause',
+      tid,
     );
   }
 
   deleteTorrent(id: string) {
     return this.httpClient.delete<Torrent>(
-      environment.gateway + '/v1/torrent/' + id
+      environment.gateway + 'v1/torrent/' + id,
     );
   }
 
   getTorrentDetails(id: string) {
     return this.httpClient.get<TorrentDetails>(
-      environment.gateway + '/v1/torrentdetails/' + id
+      environment.gateway + 'v1/torrentdetails/' + id,
     );
   }
 
   getStatus() {
     return this.httpClient.get<ServerStats>(
-      environment.gateway + '/v1/torrentstatus'
+      environment.gateway + 'v1/torrentstatus',
     );
   }
 
   getConfig() {
     return this.httpClient.get<ServerData>(
-      environment.gateway + '/v1/showconfig'
+      environment.gateway + 'v1/showconfig',
     );
   }
 }
