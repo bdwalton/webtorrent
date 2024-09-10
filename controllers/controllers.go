@@ -34,6 +34,8 @@ func GetTorrents(c *gin.Context) {
 }
 
 func AddTorrent(c *gin.Context) {
+	requireSignin(c)
+
 	var tu models.TorrentURI
 
 	if err := c.BindJSON(&tu); err != nil {
@@ -68,6 +70,8 @@ func AddTorrent(c *gin.Context) {
 }
 
 func StartTorrent(c *gin.Context) {
+	requireSignin(c)
+
 	var td models.TorrentID
 	if err := c.BindJSON(&td); err != nil {
 		log.Printf("WebTorrent: Failed to parse TorrentID: %v", err)
@@ -103,6 +107,8 @@ func StartTorrent(c *gin.Context) {
 }
 
 func PauseTorrent(c *gin.Context) {
+	requireSignin(c)
+
 	var td models.TorrentID
 	if err := c.BindJSON(&td); err != nil {
 		log.Printf("WebTorrent: Failed to parse TorrentID: %v", err)
@@ -136,6 +142,8 @@ func PauseTorrent(c *gin.Context) {
 }
 
 func DeleteTorrent(c *gin.Context) {
+	requireSignin(c)
+
 	tid := c.Param("id")
 	t := srv.client.GetTorrent(tid)
 	if t == nil {
@@ -160,6 +168,8 @@ func DeleteTorrent(c *gin.Context) {
 }
 
 func TorrentDetails(c *gin.Context) {
+	requireSignin(c)
+
 	tid := c.Param("id")
 
 	t := srv.client.GetTorrent(tid)
@@ -176,10 +186,14 @@ func TorrentDetails(c *gin.Context) {
 }
 
 func TorrentClientStatus(c *gin.Context) {
+	requireSignin(c)
+
 	c.JSON(http.StatusOK, models.WrapSessionStats(srv.client.Stats()))
 }
 
 func ShowConfig(c *gin.Context) {
+	requireSignin(c)
+
 	s := strings.Builder{}
 	srv.cfg.WriteTo(&s)
 	c.JSON(http.StatusOK, models.ServerData{Data: s.String()})
