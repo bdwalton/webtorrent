@@ -56,14 +56,6 @@ func validateConfig(cfg *ini.File) error {
 	return nil
 }
 
-func ginMode(cfg *ini.File) string {
-	if cfg.Section("server").HasKey("gin_mode") {
-		return cfg.Section("server").Key("gin_mode").String()
-	}
-
-	return "release"
-}
-
 func main() {
 	flag.Parse()
 
@@ -85,7 +77,7 @@ func main() {
 		log.Fatalf("TorrenServer: %v", err)
 	}
 
-	mappings.Init(ginMode(cfg), "./ui/dist/ui", fs.FS(angularFS))
+	mappings.Init(cfg, "./ui/dist/ui", fs.FS(angularFS))
 
 	srv := &http.Server{
 		Addr:    ":" + cfg.Section("server").Key("port").String(),

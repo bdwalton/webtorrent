@@ -11,14 +11,22 @@ import (
 	"github.com/bdwalton/webtorrent/controllers"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/markbates/goth"
+	"github.com/markbates/goth/providers/google"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"gopkg.in/ini.v1"
 )
 
 var router *gin.Engine
 
-func Init(ginMode string, basePath string, staticFiles fs.FS) {
-	gin.SetMode(ginMode)
+func Init(cfg *ini.File, basePath string, staticFiles fs.FS) {
+	gin.SetMode(ginMode(cfg))
 	router = gin.Default()
+
+	cid := cfg.Section("oauth").Key("clientid").String()
+	secret := cfg.Section("oauth").Key("secret").String()
+	cbu := cfg.Section("oauth").Key("callback_url").String()
+	goth.UseProviders(google.New(cid, secret, cbu))
 
 	// For now, allow all origins. We can tighten this up later.
 	router.Use(cors.Default())
@@ -43,6 +51,10 @@ func Init(ginMode string, basePath string, staticFiles fs.FS) {
 		c.FileFromFS(page, hfs)
 	})
 
+	router.GET("/signin", controllers.SignIn)
+	router.GET("/auth/:provider", controllers.SignInWithProvider)
+	router.GET("/auth/:provider/callback", controllers.CallBackHandler)
+
 	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	v1 := router.Group("/v1")
@@ -65,4 +77,12 @@ func Init(ginMode string, basePath string, staticFiles fs.FS) {
 
 func GetRouter() *gin.Engine {
 	return router
+}
+
+func ginMode(cfg *ini.File) string {
+	if cfg.Section("server").HasKey("gin_mode") {
+		return cfg.Section("server").Key("gin_mode").String()
+	}
+
+	return "release"
 }
