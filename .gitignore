@@ -4,3 +4,4 @@
 /webtorrent
 *json
 .env
+*ini
