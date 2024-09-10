@@ -11,8 +11,6 @@ import (
 	"github.com/bdwalton/webtorrent/controllers"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/markbates/goth"
-	"github.com/markbates/goth/providers/google"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"gopkg.in/ini.v1"
 )
@@ -22,11 +20,6 @@ var router *gin.Engine
 func Init(cfg *ini.File, basePath string, staticFiles fs.FS) {
 	gin.SetMode(ginMode(cfg))
 	router = gin.Default()
-
-	cid := cfg.Section("oauth").Key("clientid").String()
-	secret := cfg.Section("oauth").Key("secret").String()
-	cbu := cfg.Section("oauth").Key("callback_url").String()
-	goth.UseProviders(google.New(cid, secret, cbu))
 
 	// For now, allow all origins. We can tighten this up later.
 	router.Use(cors.Default())
