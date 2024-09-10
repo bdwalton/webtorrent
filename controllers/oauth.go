@@ -8,8 +8,6 @@ import (
 	"github.com/markbates/goth/gothic"
 )
 
-var store = gothic.Store
-
 func SignInWithProvider(c *gin.Context) {
 	r := c.Request.Clone(context.WithValue(c.Request.Context(), "provider", c.Param("provider")))
 	gothic.BeginAuthHandler(c.Writer, r)
@@ -23,9 +21,10 @@ func CallBackHandler(c *gin.Context) {
 		return
 	}
 
-	session, _ := store.Get(c.Request, "webtorrent-session")
-	session.Values["username"] = u.Email
-	session.Save(r, c.Writer)
+	if err := gothic.StoreInSession("username", u.Email, c.Request, c.Writer); err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
 
 	c.Redirect(http.StatusTemporaryRedirect, "/")
 }

@@ -10,9 +10,21 @@ import (
 	"github.com/bdwalton/webtorrent/models"
 	"github.com/cenkalti/rain/torrent"
 	"github.com/gin-gonic/gin"
+	"github.com/markbates/goth/gothic"
 )
 
+func requireSignin(c *gin.Context) {
+	username, err := gothic.GetFromSession("username", c.Request)
+	if err != nil {
+		c.JSON(http.StatusForbidden, "/signin")
+		return
+	}
+
+	fmt.Println("username:", username)
+}
+
 func GetTorrents(c *gin.Context) {
+	requireSignin(c)
 	torrents := []models.BasicTorrentData{}
 	for _, t := range srv.client.ListTorrents() {
 		torrents = append(torrents, models.BasicTorrentDataFromTorrent(t))
