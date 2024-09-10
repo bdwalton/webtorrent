@@ -2,3 +2,4 @@
 /.torrent.db-shm
 /.torrent.db-wal
 /webtorrent
+*json
