@@ -11,9 +11,12 @@ import (
 	"sync"
 
 	"github.com/cenkalti/rain/torrent"
+	"github.com/gorilla/sessions"
 	"github.com/markbates/goth"
+	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/google"
 	"github.com/prometheus/client_golang/prometheus"
+
 	"gopkg.in/ini.v1"
 )
 
@@ -212,6 +215,8 @@ func Init(cfg *ini.File) error {
 	secret := cfg.Section("oauth").Key("secret").String()
 	cbu := cfg.Section("oauth").Key("callback_url").String()
 	goth.UseProviders(google.New(cid, secret, cbu))
+
+	gothic.Store = sessions.NewCookieStore([]byte(cfg.Section("sessions").Key("secret").String()))
 
 	return nil
 }
