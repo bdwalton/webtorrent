@@ -28,3 +28,8 @@ func CallBackHandler(c *gin.Context) {
 
 	c.Redirect(http.StatusTemporaryRedirect, "/")
 }
+
+func SignoutHandler(c *gin.Context) {
+	gothic.Logout(c.Writer, c.Request)
+	c.Redirect(http.StatusTemporaryRedirect, "/")
+}

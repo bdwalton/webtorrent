@@ -45,6 +45,7 @@ func Init(cfg *ini.File, basePath string, staticFiles fs.FS) {
 	})
 
 	router.StaticFileFS("/signin", filepath.Join(basePath, "assets/signin.html"), hfs)
+	router.GET("/signout", controllers.SignoutHandler)
 	router.GET("/auth/:provider", controllers.SignInWithProvider)
 	router.GET("/auth/:provider/callback", controllers.CallBackHandler)
 
