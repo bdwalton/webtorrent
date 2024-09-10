@@ -20,7 +20,10 @@ func requireSignin(c *gin.Context) {
 		return
 	}
 
-	fmt.Println("username:", username)
+	if _, ok := allowedUsers[username]; !ok {
+		c.JSON(http.StatusForbidden, "/signin")
+		return
+	}
 }
 
 func GetTorrents(c *gin.Context) {

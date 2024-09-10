@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -18,6 +19,11 @@ func CallBackHandler(c *gin.Context) {
 	u, err := gothic.CompleteUserAuth(c.Writer, r)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	if _, ok := allowedUsers[u.Email]; !ok {
+		c.AbortWithError(http.StatusForbidden, fmt.Errorf("User %q not permitted.", u.Email))
 		return
 	}
 

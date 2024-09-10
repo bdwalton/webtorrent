@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/cenkalti/rain/torrent"
@@ -24,9 +25,12 @@ const (
 	suffix = ".meta"
 )
 
-// srv is the package-level object we can reference to find the
-// Torrent client and global config.
-var srv *server
+var (
+	// srv is the package-level object we can reference to find
+	// the Torrent client and global config.
+	srv          *server
+	allowedUsers = make(map[string]struct{})
+)
 
 // registerPrometheus is a dumb helper to centralize all prometheus
 // registrations for the conrollers package. This could possibly
@@ -217,6 +221,10 @@ func Init(cfg *ini.File) error {
 	goth.UseProviders(google.New(cid, secret, cbu))
 
 	gothic.Store = sessions.NewCookieStore([]byte(cfg.Section("sessions").Key("secret").String()))
+
+	for _, au := range strings.Split(cfg.Section("oauth").Key("allowed_users").String(), ",") {
+		allowedUsers[au] = struct{}{}
+	}
 
 	return nil
 }
