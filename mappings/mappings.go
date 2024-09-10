@@ -64,7 +64,6 @@ func Init(cfg *ini.File, basePath string, staticFiles fs.FS) {
 		v1.GET("/torrentdetails/:id", controllers.TorrentDetails)
 
 		// Server health diagnostic calls
-		v1.GET("/showconfig", controllers.ShowConfig)
 		v1.GET("/torrentstatus", controllers.TorrentClientStatus)
 	}
 }

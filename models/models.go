@@ -100,10 +100,6 @@ type APIError struct {
 	Details string `json:details`
 }
 
-type ServerData struct {
-	Data string `json:data`
-}
-
 // SessionStats is a mirror of the rain library torrent.SessionStats
 // struct but with types that are nicer for shipping to a client
 type SessionStats struct {

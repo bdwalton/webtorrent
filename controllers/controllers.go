@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strings"
 	"sync"
 
 	"github.com/bdwalton/webtorrent/models"
@@ -192,12 +191,4 @@ func TorrentClientStatus(c *gin.Context) {
 	requireSignin(c)
 
 	c.JSON(http.StatusOK, models.WrapSessionStats(srv.client.Stats()))
-}
-
-func ShowConfig(c *gin.Context) {
-	requireSignin(c)
-
-	s := strings.Builder{}
-	srv.cfg.WriteTo(&s)
-	c.JSON(http.StatusOK, models.ServerData{Data: s.String()})
 }
