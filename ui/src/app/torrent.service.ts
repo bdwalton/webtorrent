@@ -8,6 +8,10 @@ import { environment } from '../environments/environment';
 export class TorrentService {
   constructor(private httpClient: HttpClient) {}
 
+  signOut() {
+    return this.httpClient.get<any>(environment.gateway + 'signout');
+  }
+
   getTorrents() {
     return this.httpClient.get<Torrent[]>(environment.gateway + 'v1/torrent');
   }
