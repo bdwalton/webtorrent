@@ -16,7 +16,7 @@ export class HttpErrorsInterceptor implements HttpInterceptor {
 
   intercept(
     request: HttpRequest<unknown>,
-    next: HttpHandler
+    next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
     return next.handle(request).pipe(
       catchError((err) => {
@@ -29,6 +29,11 @@ export class HttpErrorsInterceptor implements HttpInterceptor {
             duration: 5000,
           });
         } else {
+          if (err.status == 403) {
+            window.location.href = 'signin';
+            return throwError(err);
+          }
+
           // Server side.
           this._snackBar.open('Remote error: ' + err.error.Details, 'Ok', {
             duration: 5000,
@@ -38,7 +43,7 @@ export class HttpErrorsInterceptor implements HttpInterceptor {
         // We only wanted to do user notification cleanly, so rethrow
         // the error for default, upstream handling.
         return throwError(err);
-      })
+      }),
     );
   }
 }
