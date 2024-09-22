@@ -112,7 +112,7 @@ func (s *server) watchTorrent(t *torrent.Torrent) {
 }
 
 func (s *server) persistTorrent(t *torrent.Torrent) {
-	if files, err := t.FilePaths(); err == nil {
+	if files, err := t.Files(); err == nil {
 		tpd := s.torrentBaseDir()
 		fdd := s.finalDataDir()
 		if s.datadirIncludesTorrentID() {
@@ -121,8 +121,8 @@ func (s *server) persistTorrent(t *torrent.Torrent) {
 
 		log.Printf("WebTorrent: persistTorrent(%s) storing data.", t.ID())
 		for _, f := range files {
-			src := filepath.Join(tpd, f)
-			dst := filepath.Join(fdd, f)
+			src := filepath.Join(tpd, f.Path())
+			dst := filepath.Join(fdd, f.Path())
 			if err := os.MkdirAll(filepath.Dir(dst), s.filePermissions()); err != nil && !errors.Is(err, os.ErrExist) {
 				log.Printf("WebTorrent: persistTorrent(%s) mkdirall error: %v", t.ID(), err)
 				return
