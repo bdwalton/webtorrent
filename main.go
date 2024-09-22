@@ -74,7 +74,7 @@ func main() {
 
 	// This should initialize the torrent client with appropriate config.
 	if err := controllers.Init(cfg); err != nil {
-		log.Fatalf("TorrenServer: %v", err)
+		log.Fatalf("WebTorrent: %v", err)
 	}
 
 	mappings.Init(cfg, "./ui/dist/ui", fs.FS(angularFS))
