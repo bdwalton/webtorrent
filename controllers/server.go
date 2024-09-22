@@ -168,6 +168,18 @@ func (s *server) torrentMetadatadir() string {
 	return filepath.Join(s.cfg.Section("torrent").Key("basedir").String(), "metadata")
 }
 
+func (s *server) dhtPort() uint16 {
+	if s.cfg.Section("torrent").HasKey("dht_port") {
+		dp, err := s.cfg.Section("torrent").Key("dht_port").Int()
+		if err != nil {
+			panic(fmt.Errorf("Invalid torrent.dht_port: %v", err))
+		}
+		return uint16(dp)
+	}
+
+	return torrent.DefaultConfig.DHTPort
+}
+
 // datadirIncludesTorrentID returns a boolean value representing the
 // config key and defaults to true
 func (s *server) datadirIncludesTorrentID() bool {
@@ -193,6 +205,7 @@ func (s *server) filePermissions() fs.FileMode {
 func makeTorrentConfig(s *server) torrent.Config {
 	tcfg := torrent.DefaultConfig
 	tcfg.RPCEnabled = false
+	tcfg.DHTPort = s.dhtPort()
 	tcfg.DataDir = s.torrentBaseDir()
 	tcfg.DataDirIncludesTorrentID = s.datadirIncludesTorrentID()
 	tcfg.Database = s.torrentMetadatadir()
